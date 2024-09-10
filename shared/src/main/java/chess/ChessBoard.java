@@ -48,6 +48,10 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
+        for(int n=0; n<8; n++) {
+            Arrays.fill(squares[n], null);
+        }
+        
         //PAWNS
         Arrays.fill(squares[1], new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
         Arrays.fill(squares[6], new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
@@ -74,15 +78,28 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard [squares=" 
-            + Arrays.toString(squares[0])
-            + Arrays.toString(squares[1])
-            + Arrays.toString(squares[2])
-            + Arrays.toString(squares[3])
-            + Arrays.toString(squares[4])
-            + Arrays.toString(squares[5])
-            + Arrays.toString(squares[6])
-            + Arrays.toString(squares[7])
-            + "]\n";
-    }   
+        return "ChessBoard [squares=" + Arrays.toString(squares) + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + Arrays.deepHashCode(squares);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ChessBoard other = (ChessBoard) obj;
+        if (!Arrays.deepEquals(squares, other.squares))
+            return false;
+        return true;
+    }
 }
