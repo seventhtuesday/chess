@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 
+import chess.ChessPiece.PieceType;
+
 /**
  * Represents a single chess piece
  * <p>
@@ -51,7 +53,20 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves;
+        ChessPosition testPosition;
+
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        ChessPiece piece = board.getPiece(myPosition);
+
+        switch(piece.getPieceType()) {
+            case PieceType.PAWN:
+                //...
+        }
+
+        return validMoves;
     }
 
     @Override
