@@ -1,8 +1,0 @@
-{
-    "java.project.sourcePaths": ["client/src","server/src","shared/src"],
-    "java.project.outputPath": "bin",
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar"
-    ],
-    "java.dependency.packagePresentation": "hierarchical"
-}
