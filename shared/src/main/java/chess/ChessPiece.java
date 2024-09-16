@@ -1,6 +1,8 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
@@ -54,7 +56,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> validMoves;
+        Set<ChessMove> validMoves = new HashSet<> ();
         ChessPosition testPosition;
 
         int row = myPosition.getRow();
@@ -69,13 +71,21 @@ public class ChessPiece {
                     testPosition = new ChessPosition(row+1, col);
                     if(board.getPiece(testPosition) != null) {
                         validMoves.add(new ChessMove(myPosition, testPosition, type));
-                }
+                    }
+                    testPosition = new ChessPosition(row+1, col+1);
+                    if (board.getPiece(testPosition).team == TeamColor.BLACK) {
+                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    }
+                    testPosition = new ChessPosition(row+1, col-1);
+                    if (board.getPiece(testPosition).team == TeamColor.BLACK) {
+                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    }
                 }
                 else if(piece.team == TeamColor.BLACK) {
-
-                }
-                else {
-                    //error no piece
+                    testPosition = new ChessPosition(row-1, col);
+                    if(board.getPiece(testPosition) != null) {
+                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    }
                 }
         }
 
