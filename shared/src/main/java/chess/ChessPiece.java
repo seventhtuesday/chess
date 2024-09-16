@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 
+import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
 
 /**
@@ -62,8 +63,20 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
 
         switch(piece.getPieceType()) {
-            case PieceType.PAWN:
-                //...
+            case PAWN:
+                //is black or white
+                if(piece.team == TeamColor.WHITE) {
+                    testPosition = new ChessPosition(row+1, col);
+                    if(board.getPiece(testPosition) != null) {
+                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                }
+                }
+                else if(piece.team == TeamColor.BLACK) {
+
+                }
+                else {
+                    //error no piece
+                }
         }
 
         return validMoves;
