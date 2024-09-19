@@ -69,27 +69,68 @@ public class ChessPiece {
                 //is black or white
                 if(piece.team == TeamColor.WHITE) {
                     testPosition = new ChessPosition(row+1, col);
-                    if(board.getPiece(testPosition) != null) {
-                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    if(board.getPiece(testPosition) == null) {
+                        validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        testPosition = new ChessPosition(row+2, col);
+                        if(row == 2 && board.getPiece(testPosition) == null) {
+                            validMoves.add(new ChessMove(myPosition, testPosition));
+                        }
                     }
-                    testPosition = new ChessPosition(row+1, col+1);
-                    if (board.getPiece(testPosition).team == TeamColor.BLACK) {
-                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    if(col != 8) {   
+                        testPosition = new ChessPosition(row+1, col+1);
+                        if (board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
+                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        }
                     }
-                    testPosition = new ChessPosition(row+1, col-1);
-                    if (board.getPiece(testPosition).team == TeamColor.BLACK) {
-                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    if(col != 1) {
+                        testPosition = new ChessPosition(row+1, col-1);
+                        if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
+                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        }
                     }
                 }
                 else if(piece.team == TeamColor.BLACK) {
                     testPosition = new ChessPosition(row-1, col);
-                    if(board.getPiece(testPosition) != null) {
-                        validMoves.add(new ChessMove(myPosition, testPosition, type));
+                    if(board.getPiece(testPosition) == null) {
+                        validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        testPosition = new ChessPosition(row-2, col);
+                        if(row == 7 && board.getPiece(testPosition) == null) {
+                            validMoves.add(new ChessMove(myPosition, testPosition));
+                        }
+                    }
+                    if(col != 8) {   
+                        testPosition = new ChessPosition(row-1, col+1);
+                        if (board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
+                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        }
+                    }
+                    if(col != 1) {
+                        testPosition = new ChessPosition(row-1, col-1);
+                        if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
+                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                        }
                     }
                 }
         }
 
         return validMoves;
+    }
+
+    public Collection<ChessMove> checkPromote(ChessMove move) {
+        Collection<ChessMove> moves = new HashSet<> ();
+        ChessPosition end = move.getEndPosition();
+        ChessPosition start = move.getStartPosition();
+        if(end.getRow() == 1 || end.getRow() == 8) {
+            moves.add(new ChessMove(start, end, PieceType.BISHOP));
+            moves.add(new ChessMove(start, end, PieceType.KNIGHT));
+            moves.add(new ChessMove(start, end, PieceType.QUEEN));
+            moves.add(new ChessMove(start, end, PieceType.ROOK));
+            return moves;
+        }
+        else {
+            moves.add(move);
+            return moves;
+        }
     }
 
     @Override
