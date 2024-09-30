@@ -1,12 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.plaf.basic.BasicBorders;
-
-import chess.ChessGame.TeamColor;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -18,9 +12,18 @@ public class ChessGame {
     private TeamColor turn;
     private ChessBoard game;
 
+    /**
+     * Enum identifying the 2 possible teams in a chess game
+     */
+    public enum TeamColor {
+        WHITE,
+        BLACK
+    }
+    
     public ChessGame() {
         turn = TeamColor.WHITE;
         game = new ChessBoard();
+        game.resetBoard();
     }
 
     /**
@@ -40,14 +43,6 @@ public class ChessGame {
     }
 
     /**
-     * Enum identifying the 2 possible teams in a chess game
-     */
-    public enum TeamColor {
-        WHITE,
-        BLACK
-    }
-
-    /**
      * Gets a valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
@@ -55,14 +50,31 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        //check if there is a piece at startPosition
         ChessPiece piece = game.getPiece(startPosition);
         if(piece == null) {
             return null;
         }
+
+        //if piece at start check which moves are valid
         else {
             Collection<ChessMove> moves = piece.pieceMoves(game, startPosition);
             for(ChessMove move: moves) {
-                //...
+                ChessPosition end = move.getEndPosition();
+                ChessPiece endP = game.getPiece(end);
+                
+                //make the move temporarily
+                game.addPiece(end, piece);
+                game.remPiece(startPosition);
+
+                //check if in check; remove move if so
+                if(isInCheck(piece.getTeamColor())) {
+                    moves.remove(move);
+                }
+
+                //undo move
+                game.addPiece(startPosition, piece);
+                game.addPiece(end, endP);
             }
             return moves;
         }
