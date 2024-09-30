@@ -2,7 +2,6 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
@@ -56,7 +55,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        Set<ChessMove> validMoves = new HashSet<> ();
+        Collection<ChessMove> validMoves = new HashSet<> ();
         ChessPosition testPosition;
 
         int row = myPosition.getRow();

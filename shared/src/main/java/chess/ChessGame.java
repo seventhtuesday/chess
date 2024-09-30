@@ -1,6 +1,12 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.swing.plaf.basic.BasicBorders;
+
+import chess.ChessGame.TeamColor;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,16 +15,19 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor turn;
+    private ChessBoard game;
 
     public ChessGame() {
-
+        turn = TeamColor.WHITE;
+        game = new ChessBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -27,7 +36,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -46,7 +55,17 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = game.getPiece(startPosition);
+        if(piece == null) {
+            return null;
+        }
+        else {
+            Collection<ChessMove> moves = piece.pieceMoves(game, startPosition);
+            for(ChessMove move: moves) {
+                //...
+            }
+            return moves;
+        }
     }
 
     /**
@@ -56,7 +75,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = game.getPiece(start);
+        if(validMoves(start) == null) {
+            throw InvalidMoveException("No piece at start position.");
+        }
     }
 
     /**
@@ -96,7 +120,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        game = board;
     }
 
     /**
@@ -105,6 +129,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return game;
     }
 }
