@@ -56,13 +56,14 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //check if there is a piece at startPosition
         ChessPiece piece = game.getPiece(startPosition);
+        Collection<ChessMove> moves = new HashSet<> (0);
         if(piece == null) {
-            return null;
+            return moves;
         }
 
         //if piece at start check which moves are valid
         else {
-            Collection<ChessMove> moves = piece.pieceMoves(game, startPosition);
+            moves = piece.pieceMoves(game, startPosition);
             Collection<ChessMove> goods = new HashSet<> ();
             for(ChessMove move: moves) {
                 ChessPosition end = move.getEndPosition();
@@ -94,15 +95,15 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
-        ChessPiece piece = game.getPiece(start);
 
         //check for easy errors
-        if(piece.getTeamColor() != turn) {
-            throw new InvalidMoveException("It is the other teams turn.");
-        }
-        else if(validMoves(start) == null) {
+        if(validMoves(start).size() == 0) {
             throw new InvalidMoveException("No piece at start position.");
         }
+        ChessPiece piece = game.getPiece(start);
+        if(piece.getTeamColor() != turn) {
+            throw new InvalidMoveException("It is the other teams turn.");
+        }        
 
         //check if move is valid
         Collection<ChessMove> moves = validMoves(start);
