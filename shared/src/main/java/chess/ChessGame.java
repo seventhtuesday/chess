@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
@@ -62,6 +63,7 @@ public class ChessGame {
         //if piece at start check which moves are valid
         else {
             Collection<ChessMove> moves = piece.pieceMoves(game, startPosition);
+            Collection<ChessMove> goods = new HashSet<> ();
             for(ChessMove move: moves) {
                 ChessPosition end = move.getEndPosition();
                 ChessPiece endP = game.getPiece(end);
@@ -71,15 +73,15 @@ public class ChessGame {
                 game.remPiece(startPosition);
 
                 //check if in check; remove move if so
-                if(isInCheck(piece.getTeamColor())) {
-                    moves.remove(move);
+                if(!isInCheck(piece.getTeamColor())) {
+                    goods.add(move);
                 }
 
                 //undo move
                 game.addPiece(startPosition, piece);
                 game.addPiece(end, endP);
             }
-            return moves;
+            return goods;
         }
     }
 
