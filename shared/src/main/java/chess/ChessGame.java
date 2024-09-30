@@ -3,6 +3,7 @@ package chess;
 import java.util.Collection;
 
 import chess.ChessGame.TeamColor;
+import chess.ChessPiece.PieceType;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -133,7 +134,34 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition pos;
+        ChessPiece piece;
+        ChessPiece king;
+        
+        //find king
+        kingloop:
+        for(int n = 1; n <= 8; n++) {
+            for(int m = 1; m <= 8; m++) {
+                pos = new ChessPosition(n, m);
+                piece = game.getPiece(pos);
+                if(piece.getTeamColor() == teamColor && piece.getPieceType() == PieceType.KING) {
+                    king = piece;
+                    break kingloop;
+                }
+            }
+        }
+
+        //find if other piece can capture king
+        for(int n = 1; n <= 8; n++) {
+            for(int m = 1; m <= 8; m++) {
+                pos = new ChessPosition(n, m);
+                piece = game.getPiece(pos);
+                if(piece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> moves = piece.pieceMoves(game, pos);
+                    
+                }
+            }
+        }
     }
 
     /**
@@ -157,6 +185,8 @@ public class ChessGame {
         if(!isInCheck(teamColor)) {
             ChessPosition pos;
             ChessPiece piece;
+            
+            //check each board space for pieces on team and if they can move
             for(int n = 1; n <= 8; n++) {
                 for(int m = 1; m <= 8; m++) {
                     pos = new ChessPosition(n, m);
@@ -166,6 +196,7 @@ public class ChessGame {
                     }
                 }
             }
+            //if make it through then none can move
             return true;
         }
         //return false otherwise
