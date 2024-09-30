@@ -160,8 +160,11 @@ public class ChessGame {
                 piece = game.getPiece(pos);
                 if(piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(game, pos);
-                    if(moves.contains(new ChessMove(pos, king))) {
-                        return true;
+                    PieceType[] types = {null, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
+                    for(PieceType type: types) {
+                        if(moves.contains(new ChessMove(pos, king, type))) {
+                            return true;
+                        }
                     }
                 }
             }
