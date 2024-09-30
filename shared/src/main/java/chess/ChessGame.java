@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 
+import chess.ChessGame.TeamColor;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -90,8 +92,37 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = game.getPiece(start);
-        if(validMoves(start) == null) {
-            throw InvalidMoveException("No piece at start position.");
+
+        //check for easy errors
+        if(piece.getTeamColor() != turn) {
+            throw new InvalidMoveException("It is the other teams turn.");
+        }
+        else if(validMoves(start) == null) {
+            throw new InvalidMoveException("No piece at start position.");
+        }
+
+        //check if move is valid
+        Collection<ChessMove> moves = validMoves(start);
+        if(!moves.contains(move)) {
+            throw new InvalidMoveException("That is not a valid move. It may leave the king in check, capture one of the same team pieces, or move illegally");
+        }
+        else {
+            //check if need to promote
+            if(move.getPromotionPiece() != null) {
+                piece = new ChessPiece(turn, move.getPromotionPiece());
+            }
+
+            //make the move
+            game.addPiece(end, piece);
+            game.remPiece(start);
+
+            //advance turn
+            if(turn == TeamColor.BLACK) {
+                turn = TeamColor.WHITE;
+            }
+            else {
+                turn = TeamColor.BLACK;
+            }
         }
     }
 
