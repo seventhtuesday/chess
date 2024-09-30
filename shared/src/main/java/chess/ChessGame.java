@@ -144,7 +144,7 @@ public class ChessGame {
             for(int m = 1; m <= 8; m++) {
                 pos = new ChessPosition(n, m);
                 piece = game.getPiece(pos);
-                if(piece.getTeamColor() == teamColor && piece.getPieceType() == PieceType.KING) {
+                if(piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == PieceType.KING) {
                     king = pos;
                     break kingloop;
                 }
@@ -156,12 +156,10 @@ public class ChessGame {
             for(int m = 1; m <= 8; m++) {
                 pos = new ChessPosition(n, m);
                 piece = game.getPiece(pos);
-                if(piece.getTeamColor() != teamColor) {
+                if(piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(game, pos);
-                    for(ChessMove move: moves) {
-                        if(move.getEndPosition() == king) {
-                            return true;
-                        }
+                    if(moves.contains(new ChessMove(pos, king))) {
+                        return true;
                     }
                 }
             }
