@@ -136,7 +136,7 @@ public class ChessGame {
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition pos;
         ChessPiece piece;
-        ChessPiece king;
+        ChessPosition king = null;
         
         //find king
         kingloop:
@@ -145,7 +145,7 @@ public class ChessGame {
                 pos = new ChessPosition(n, m);
                 piece = game.getPiece(pos);
                 if(piece.getTeamColor() == teamColor && piece.getPieceType() == PieceType.KING) {
-                    king = piece;
+                    king = pos;
                     break kingloop;
                 }
             }
@@ -158,10 +158,15 @@ public class ChessGame {
                 piece = game.getPiece(pos);
                 if(piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(game, pos);
-                    
+                    for(ChessMove move: moves) {
+                        if(move.getEndPosition() == king) {
+                            return true;
+                        }
+                    }
                 }
             }
         }
+        return false;
     }
 
     /**
