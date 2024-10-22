@@ -25,7 +25,7 @@ public class GameDAO {
     }
 
     //clears store
-    public clear() {
+    public void clear() {
         games.clear();
     }
 }

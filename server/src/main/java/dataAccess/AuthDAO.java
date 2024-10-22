@@ -10,7 +10,7 @@ public class AuthDAO {
     private HashMap<String, AuthData> tokens = new HashMap<>();
 
     //Creates new AuthData from a UserData, stores the AuthData, and Returns it.
-    public AuthData createAuthData(UserData user) {
+    public AuthData createAuth(UserData user) {
         AuthData auth = new AuthData(user.username(), UUID.randomUUID().toString());
         tokens.put(auth.username(), auth);
         return auth;
