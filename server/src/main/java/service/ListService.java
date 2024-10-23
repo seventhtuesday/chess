@@ -1,15 +1,12 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
-import model.AuthData;
+import DataAccess.AuthDAO;
+import DataAccess.GameDAO;
 import model.AuthRequest;
 import model.GameData;
 import model.GameResult;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ListService {
     private AuthDAO authDAO;

@@ -1,16 +1,14 @@
 package service;
 
 import chess.ChessGame;
-import dataAccess.AuthDAO;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
+import DataAccess.AuthDAO;
+import DataAccess.GameDAO;
+import DataAccess.UserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
 
 public class ClearTest {
     static UserDAO userDAO = new UserDAO();

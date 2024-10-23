@@ -186,18 +186,7 @@ public class ChessGame {
         }
         //same as stalemate below; check stalemate for comments
         else {
-            ChessPosition pos;
-            ChessPiece piece;
-            for(int n = 1; n <= 8; n++) {
-                for(int m = 1; m <= 8; m++) {
-                    pos = new ChessPosition(n, m);
-                    piece = game.getPiece(pos);
-                    if(piece != null && piece.getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return Stalemate(teamColor);
         }
     }
 
@@ -214,22 +203,26 @@ public class ChessGame {
             return false;
         }
         else {
-            ChessPosition pos;
-            ChessPiece piece;
-            
-            //check each board space for pieces on team and if they can move
-            for(int n = 1; n <= 8; n++) {
-                for(int m = 1; m <= 8; m++) {
-                    pos = new ChessPosition(n, m);
-                    piece = game.getPiece(pos);
-                    if(piece != null && piece.getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
-                        return false;
-                    }
+            return Stalemate(teamColor);
+        }      
+    }
+
+    private boolean Stalemate(TeamColor teamColor) {
+        ChessPosition pos;
+        ChessPiece piece;
+
+        //check each board space for pieces on team and if they can move
+        for(int n = 1; n <= 8; n++) {
+            for(int m = 1; m <= 8; m++) {
+                pos = new ChessPosition(n, m);
+                piece = game.getPiece(pos);
+                if(piece != null && piece.getTeamColor() == teamColor && !validMoves(pos).isEmpty()) {
+                    return false;
                 }
             }
-            //if make it through then none can move
-            return true;
-        }      
+        }
+        //if make it through then none can move
+        return true;
     }
 
     /**

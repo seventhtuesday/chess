@@ -2,7 +2,7 @@ import server.Server;
 
 public class Main {
     public static void main(String[] args) {
-        Server Sevy = new Server();
-        Sevy.run(8080);
+        Server sevy = new Server();
+        sevy.run(8080);
     }
 }

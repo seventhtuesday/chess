@@ -1,7 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.*;
+import DataAccess.*;
 import model.*;
 import service.*;
 import spark.*;
@@ -60,6 +60,7 @@ public class Server {
     private String dataExceptHand(DataAccessException e, Request req, Response res) {
         res.type("application/json");
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+
         res.status(500);
         res.body(body);
         return body;
@@ -68,6 +69,7 @@ public class Server {
     private String exceptHand(Exception e, Request req, Response res) {
         res.type("application/json");
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+
         if(Objects.equals(e.getMessage(), "bad request")) {
             res.status(400);
             res.body(body);
@@ -95,6 +97,7 @@ public class Server {
     private Object regHand(Request req, Response res) throws Exception {
         res.type("application/json");
         var newUser = new Gson().fromJson(req.body(), UserData.class);
+
         AuthData authData = regS.registerUser(newUser);
 
         res.status(200);
@@ -105,6 +108,7 @@ public class Server {
     private Object loginHand(Request req, Response res) throws Exception {
         res.type("application/json");
         var login = new Gson().fromJson(req.body(), LoginRequest.class);
+
         AuthData authData = loginS.login(login);
 
         res.status(200);
@@ -115,6 +119,7 @@ public class Server {
     private Object logoutHand(Request req, Response res) throws Exception {
         res.type("application/json");
         var logout = new AuthRequest(req.headers("Authorization"));
+
         logoutS.logout(logout);
 
         res.status(200);
@@ -126,6 +131,7 @@ public class Server {
         var auth = req.headers("Authorization");
         var name = new Gson().fromJson(req.body(), CreateRequest.class);
         var game = new CreateRequest(name.gameName(), auth);
+
         CreateResult gameID = gameS.createGame(game);
 
         res.status(200);
@@ -138,6 +144,7 @@ public class Server {
         var auth = req.headers("Authorization");
         var name = new Gson().fromJson(req.body(), JoinRequest.class);
         var game = new JoinRequest(name.playerColor(), name.gameID(), auth);
+
         joinS.join(game);
 
         res.status(200);

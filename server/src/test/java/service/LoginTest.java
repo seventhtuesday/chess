@@ -1,13 +1,12 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.UserDAO;
+import DataAccess.AuthDAO;
+import DataAccess.UserDAO;
 import model.LoginRequest;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.RegService;
 
 public class LoginTest {
     static UserDAO userDAO = new UserDAO();

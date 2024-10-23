@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 import chess.ChessGame.TeamColor;
 import chess.ChessPiece.PieceType;
@@ -65,50 +66,7 @@ public class ChessPiece {
 
         switch(piece.getPieceType()) {
             case PAWN:
-                if(piece.team == TeamColor.WHITE) {
-                    testPosition = new ChessPosition(row+1, col);
-                    if(board.getPiece(testPosition) == null) {
-                        validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        testPosition = new ChessPosition(row+2, col);
-                        if(row == 2 && board.getPiece(testPosition) == null) {
-                            validMoves.add(new ChessMove(myPosition, testPosition));
-                        }
-                    }
-                    if(col != 8) {   
-                        testPosition = new ChessPosition(row+1, col+1);
-                        if (board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
-                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        }
-                    }
-                    if(col != 1) {
-                        testPosition = new ChessPosition(row+1, col-1);
-                        if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
-                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        }
-                    }
-                }
-                else if(piece.team == TeamColor.BLACK) {
-                    testPosition = new ChessPosition(row-1, col);
-                    if(board.getPiece(testPosition) == null) {
-                        validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        testPosition = new ChessPosition(row-2, col);
-                        if(row == 7 && board.getPiece(testPosition) == null) {
-                            validMoves.add(new ChessMove(myPosition, testPosition));
-                        }
-                    }
-                    if(col != 8) {   
-                        testPosition = new ChessPosition(row-1, col+1);
-                        if (board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
-                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        }
-                    }
-                    if(col != 1) {
-                        testPosition = new ChessPosition(row-1, col-1);
-                        if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
-                            validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
-                        }
-                    }
-                }
+                validMoves.addAll(piece.pawnMoves(board, myPosition));
                 break;
             case QUEEN:
                 //Queen will fall through Rook and Bishop movement
@@ -284,6 +242,62 @@ public class ChessPiece {
         return validMoves;
     }
 
+    public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
+        Collection<ChessMove> validMoves = new HashSet<> ();
+        ChessPosition testPosition;
+
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+
+        ChessPiece piece = board.getPiece(myPosition);
+
+        if(piece.team == TeamColor.WHITE) {
+            testPosition = new ChessPosition(row+1, col);
+            if(board.getPiece(testPosition) == null) {
+                validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                testPosition = new ChessPosition(row+2, col);
+                if(row == 2 && board.getPiece(testPosition) == null) {
+                    validMoves.add(new ChessMove(myPosition, testPosition));
+                }
+            }
+            if(col != 8) {
+                testPosition = new ChessPosition(row+1, col+1);
+                if (board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
+                    validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                }
+            }
+            if(col != 1) {
+                testPosition = new ChessPosition(row+1, col-1);
+                if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).team == TeamColor.BLACK) {
+                    validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                }
+            }
+        }
+        else if(piece.team == TeamColor.BLACK) {
+            testPosition = new ChessPosition(row-1, col);
+            if(board.getPiece(testPosition) == null) {
+                validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                testPosition = new ChessPosition(row-2, col);
+                if(row == 7 && board.getPiece(testPosition) == null) {
+                    validMoves.add(new ChessMove(myPosition, testPosition));
+                }
+            }
+            if(col != 8) {
+                testPosition = new ChessPosition(row-1, col+1);
+                if (board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
+                    validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                }
+            }
+            if(col != 1) {
+                testPosition = new ChessPosition(row-1, col-1);
+                if ( board.getPiece(testPosition) != null && board.getPiece(testPosition).getTeamColor() == TeamColor.WHITE) {
+                    validMoves.addAll(checkPromote(new ChessMove(myPosition, testPosition)));
+                }
+            }
+        }
+        return validMoves;
+    }
+
     //determines if a piece is on the other team and therefore can be captured
     public boolean canCapture(ChessBoard map, ChessPosition them, TeamColor us) {
         return map.getPiece(them).getTeamColor() != us;
@@ -313,27 +327,15 @@ public class ChessPiece {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((team == null) ? 0 : team.hashCode());
-        result = prime * result + ((type == null) ? 0 : type.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return team == that.team && type == that.type;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ChessPiece other = (ChessPiece) obj;
-        if (team != other.team)
-            return false;
-        if (type != other.type)
-            return false;
-        return true;
+    public int hashCode() {
+        return Objects.hash(team, type);
     }
 }

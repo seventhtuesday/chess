@@ -1,12 +1,11 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
+import DataAccess.AuthDAO;
+import DataAccess.DataAccessException;
+import DataAccess.UserDAO;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
 public class LoginService {
     private UserDAO userDAO;
