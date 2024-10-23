@@ -7,26 +7,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameDAO {
-    private HashMap<Number, GameData> games = new HashMap<>();
+    private HashMap<Number, GameData> list = new HashMap<>();
 
     //creates new game of given data in store
     public void createGame(GameData game) {
-        games.put(game.gameID(), game);
+        list.put(game.gameID(), game);
     }
 
     //returns game of given ID from store
     public GameData getGame(int gameID) throws DataAccessException {
-        return games.get(gameID);
+        return list.get(gameID);
     }
 
     //returns all games
     public ArrayList<GameData> getAllGames() {
-        return new ArrayList<>(games.values());
+        ArrayList<GameData> games = new ArrayList<>(list.values());
+        return games;
     }
 
     public void updateGame(GameData game) throws DataAccessException {
-        if (games.containsKey(game.gameID())) {
-            games.put(game.gameID(), game);
+        if (list.containsKey(game.gameID())) {
+            list.put(game.gameID(), game);
         }
         else {
             throw new DataAccessException("No such game");
@@ -35,6 +36,6 @@ public class GameDAO {
 
     //clears store
     public void clear() {
-        games.clear();
+        list.clear();
     }
 }

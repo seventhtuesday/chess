@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.AuthDAO;
 import dataAccess.UserDAO;
+import model.LoginRequest;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,12 +26,13 @@ public class LoginTest {
         UserData user = new UserData("good","pass", "email@mail.com");
         userDAO.createUser(user);
         //test that user can log in
-        Assertions.assertDoesNotThrow(() -> loginS.login(user));
+        var req = new LoginRequest("good","pass");
+        Assertions.assertDoesNotThrow(() -> loginS.login(req));
     }
 
     @Test
     void testLoginBad() {
         //test that a user that doesn't exist will error
-        Assertions.assertThrows(Exception.class, () -> loginS.login(new UserData("bad", "pass", null)));
+        Assertions.assertThrows(Exception.class, () -> loginS.login(new LoginRequest("bad", "pass")));
     }
 }

@@ -23,16 +23,16 @@ public class GameService {
     public CreateResult createGame(CreateRequest create) throws Exception {
         //verify not bad request
         if(create.authToken() == null || create.gameName() == null){
-            throw new Exception("error: bad request");
+            throw new Exception("bad request");
         }
         //verify authToken
         if(authDAO.getAuth(create.authToken()) == null) {
-            throw new Exception("error: unauthorized");
+            throw new Exception("unauthorized");
         }
         try {
             //generate random game ID
             Random generator = new Random();
-            int gameID = generator.nextInt();
+            int gameID = generator.nextInt(10000);
             //create the game
             ChessGame game = new ChessGame();
             GameData data = new GameData(gameID, null, null, create.gameName(), game);

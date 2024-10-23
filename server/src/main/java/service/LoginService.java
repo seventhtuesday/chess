@@ -22,14 +22,14 @@ public class LoginService {
             //check if user exists
             UserData data = userDAO.getUser(user.username());
             if (data == null) {
-                throw new Exception("error: unauthorized");
+                throw new Exception("unauthorized");
             }
             //check if password matches
             if (user.password().equals(data.password())) {
                 authDAO.deleteAuth(data.username());
                 return authDAO.createAuth(data);
             } else {
-                throw new Exception("error: unauthorized");
+                throw new Exception("unauthorized");
             }
         } catch (DataAccessException e) {
             throw new Exception(e.getMessage());

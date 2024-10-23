@@ -9,6 +9,7 @@ import model.GameData;
 import model.GameResult;
 
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ListService {
     private AuthDAO authDAO;
@@ -22,15 +23,15 @@ public class ListService {
     public ArrayList<GameResult> list(AuthRequest request) throws Exception {
         //verify authToken
         if(authDAO.getAuth(request.authToken()) == null) {
-            throw new Exception("error: unauthorized");
+            throw new Exception("unauthorized");
         }
         try {
             ArrayList<GameData> temp = gameDAO.getAllGames();
-            ArrayList<GameResult> result = new ArrayList<>();
+            ArrayList<GameResult> games = new ArrayList<>() {};
             for (GameData game : temp) {
-                result.add(new GameResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+                games.add(new GameResult(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
             }
-            return result;
+            return games;
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

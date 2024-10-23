@@ -7,6 +7,7 @@ import service.*;
 import spark.*;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 public class Server {
@@ -56,28 +57,34 @@ public class Server {
         return Spark.port();
     }
 
-    private void dataExceptHand(DataAccessException e, Request req, Response res) {
+    private String dataExceptHand(DataAccessException e, Request req, Response res) {
+        res.type("application/json");
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
         res.status(500);
-        res.body(new Gson().toJson(e.getMessage()));
+        res.body(body);
+        return body;
     }
 
-    private void exceptHand(Exception e, Request req, Response res) {
-        if(Objects.equals(e.getMessage(), "error: bad request")) {
+    private String exceptHand(Exception e, Request req, Response res) {
+        res.type("application/json");
+        var body = new Gson().toJson(Map.of("message", String.format("Error: %s", e.getMessage())));
+        if(Objects.equals(e.getMessage(), "bad request")) {
             res.status(400);
-            res.body(new Gson().toJson(e.getMessage()));
+            res.body(body);
         }
-        else if (Objects.equals(e.getMessage(), "error: unauthorized")) {
+        else if (Objects.equals(e.getMessage(), "unauthorized")) {
             res.status(401);
-            res.body(new Gson().toJson(e.getMessage()));
+            res.body(body);
         }
-        else if (Objects.equals(e.getMessage(), "error: already taken")) {
+        else if (Objects.equals(e.getMessage(), "already taken")) {
             res.status(403);
-            res.body(new Gson().toJson(e.getMessage()));
+            res.body(body);
         }
         else {
             res.status(500);
-            res.body(new Gson().toJson(e.getMessage()));
+            res.body(body);
         }
+        return body;
     }
 
     public void stop() {
@@ -140,11 +147,13 @@ public class Server {
     private Object listHand(Request req, Response res) throws Exception {
         res.type("application/json");
         var list = new AuthRequest(req.headers("Authorization"));
-        ArrayList<GameResult> result = listS.list(list);
+        ArrayList<GameResult> games = listS.list(list);
+
+        var body = new Gson().toJson(new ListResponse(games));
 
         res.status(200);
-        res.body(new Gson().toJson(result));
-        return new Gson().toJson(result);
+        res.body(body);
+        return body;
     }
 
     private Object clearHand(Request req, Response res) throws Exception {

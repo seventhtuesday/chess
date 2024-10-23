@@ -32,7 +32,7 @@ public class JoinTest {
         GameData game = new GameData(1234, null, null, "test", new ChessGame());
         gameDAO.createGame(game);
         //test joining game
-        Assertions.assertDoesNotThrow(() -> joinS.join(new JoinRequest("White", game.gameID(), auth.authToken())));
+        Assertions.assertDoesNotThrow(() -> joinS.join(new JoinRequest(ChessGame.TeamColor.WHITE, game.gameID(), auth.authToken())));
     }
 
     @Test
@@ -47,6 +47,6 @@ public class JoinTest {
         //test null input
         Assertions.assertThrows(Exception.class, () -> joinS.join(new JoinRequest(null, game.gameID(), auth.authToken())));
         //test team already taken
-        Assertions.assertThrows(Exception.class, () -> joinS.join(new JoinRequest("White", game.gameID(), auth.authToken())));
+        Assertions.assertThrows(Exception.class, () -> joinS.join(new JoinRequest(ChessGame.TeamColor.WHITE, game.gameID(), auth.authToken())));
     }
 }

@@ -17,7 +17,7 @@ public class LogoutService {
             //check that auth token is valid
             AuthData data = authDAO.getAuth(auth.authToken());
             if (data == null) {
-                throw new Exception("error: unauthorized");
+                throw new Exception("unauthorized");
             }
             else {
                 authDAO.deleteAuth(data.authToken());

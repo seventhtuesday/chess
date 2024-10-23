@@ -19,11 +19,11 @@ public class RegService {
         try {
             //check for valid request
             if (newUser.username() == null || newUser.password() == null || newUser.email() == null) {
-                throw new Exception("error: bad request");
+                throw new Exception("bad request");
             }
             //check username
             if(userDAO.getUser(newUser.username()) != null) {
-                throw new Exception("error: already taken");
+                throw new Exception("already taken");
             }
             else{
                 //add user
