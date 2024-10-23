@@ -108,7 +108,7 @@ public class ChessGame {
         //check if move is valid
         Collection<ChessMove> moves = validMoves(start);
         if(!moves.contains(move)) {
-            throw new InvalidMoveException("That is not a valid move. It may leave the king in check, capture one of the same team pieces, or move illegally");
+            throw new InvalidMoveException("That is not a valid move.");
         }
         else {
             //check if need to promote
@@ -159,14 +159,21 @@ public class ChessGame {
             for(int m = 1; m <= 8; m++) {
                 pos = new ChessPosition(n, m);
                 piece = game.getPiece(pos);
-                if(piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(game, pos);
-                    PieceType[] types = {null, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
-                    for(PieceType type: types) {
-                        if(moves.contains(new ChessMove(pos, king, type))) {
-                            return true;
-                        }
-                    }
+                if(subCheck(pos, piece, teamColor, king)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean subCheck(ChessPosition pos, ChessPiece piece, TeamColor teamColor, ChessPosition king) {
+        if(piece != null && piece.getTeamColor() != teamColor) {
+            Collection<ChessMove> moves = piece.pieceMoves(game, pos);
+            PieceType[] types = {null, PieceType.QUEEN, PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK};
+            for(PieceType type: types) {
+                if(moves.contains(new ChessMove(pos, king, type))) {
+                    return true;
                 }
             }
         }

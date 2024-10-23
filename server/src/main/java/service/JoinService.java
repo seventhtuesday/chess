@@ -1,8 +1,8 @@
 package service;
 
-import data_access.AuthDAO;
-import data_access.DataAccessException;
-import data_access.GameDAO;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import model.JoinRequest;
@@ -32,7 +32,8 @@ public class JoinService {
                 throw new Exception("unauthorized");
             }
             //check for team already taken
-            if((joinRequest.playerColor().equals(WHITE) && game.whiteUsername() != null) || (joinRequest.playerColor().equals(BLACK) && game.blackUsername() != null)) {
+            if((joinRequest.playerColor().equals(WHITE) && game.whiteUsername() != null) ||
+                    (joinRequest.playerColor().equals(BLACK) && game.blackUsername() != null)) {
                 throw new Exception("already taken");
             }
             //join the game
