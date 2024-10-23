@@ -4,6 +4,7 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import model.AuthData;
+import model.AuthRequest;
 import model.GameData;
 import model.GameResult;
 
@@ -18,7 +19,7 @@ public class ListService {
         this.gameDAO = gameDAO;
     }
 
-    public ArrayList<GameResult> list(AuthData request) throws Exception {
+    public ArrayList<GameResult> list(AuthRequest request) throws Exception {
         //verify authToken
         if(authDAO.getAuth(request.authToken()) == null) {
             throw new Exception("error: unauthorized");

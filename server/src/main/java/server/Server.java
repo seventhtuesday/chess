@@ -6,6 +6,7 @@ import model.*;
 import service.*;
 import spark.*;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Server {
@@ -22,13 +23,13 @@ public class Server {
         AuthDAO authDAO = new AuthDAO();
         GameDAO gameDAO = new GameDAO();
 
-        RegService regS = new RegService(userDAO, authDAO);
-        LoginService loginS = new LoginService(userDAO, authDAO);
-        LogoutService logoutS = new LogoutService(authDAO);
-        GameService gameS = new GameService(authDAO, gameDAO);
-        JoinService joinS = new JoinService(authDAO, gameDAO);
-        ListService listS = new ListService(authDAO, gameDAO);
-        ClearService clearS = new ClearService(userDAO, authDAO, gameDAO);
+        regS = new RegService(userDAO, authDAO);
+        loginS = new LoginService(userDAO, authDAO);
+        logoutS = new LogoutService(authDAO);
+        gameS = new GameService(authDAO, gameDAO);
+        joinS = new JoinService(authDAO, gameDAO);
+        listS = new ListService(authDAO, gameDAO);
+        clearS = new ClearService(userDAO, authDAO, gameDAO);
     }
 
     public int run(int desiredPort) {
@@ -37,19 +38,19 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user", regHand);
-        Spark.post("/session", loginHand);
-        Spark.delete("/session", logoutHand);
-        Spark.post("/game", gameHand);
-        Spark.put("/game", joinHand);
-        Spark.get("/game", listHand);
-        Spark.delete("/db", clearHand);
+        Spark.post("/user", this::regHand);
+        Spark.post("/session", this::loginHand);
+        Spark.delete("/session", this::logoutHand);
+        Spark.post("/game", this::gameHand);
+        Spark.put("/game", this::joinHand);
+        Spark.get("/game", this::listHand);
+        Spark.delete("/db", this::clearHand);
 
-        Spark.exception(DataAccessException.class, dataExceptHand);
-        Spark.exception(Exception.class, exceptHand);
+        Spark.exception(DataAccessException.class, this::dataExceptHand);
+        Spark.exception(Exception.class, this::exceptHand);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        //Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -102,5 +103,56 @@ public class Server {
         res.status(200);
         res.body(new Gson().toJson(authData));
         return new Gson().toJson(authData);
+    }
+
+    private Object logoutHand(Request req, Response res) throws Exception {
+        res.type("application/json");
+        var logout = new AuthRequest(req.headers("Authorization"));
+        logoutS.logout(logout);
+
+        res.status(200);
+        return "{}";
+    }
+
+    private Object gameHand(Request req, Response res) throws Exception {
+        res.type("application/json");
+        var auth = req.headers("Authorization");
+        var name = new Gson().fromJson(req.body(), CreateRequest.class);
+        var game = new CreateRequest(name.gameName(), auth);
+        CreateResult gameID = gameS.createGame(game);
+
+        res.status(200);
+        res.body(new Gson().toJson(gameID));
+        return new Gson().toJson(gameID);
+    }
+
+    private Object joinHand(Request req, Response res) throws Exception {
+        res.type("application/json");
+        var auth = req.headers("Authorization");
+        var name = new Gson().fromJson(req.body(), JoinRequest.class);
+        var game = new JoinRequest(name.playerColor(), name.gameID(), auth);
+        joinS.join(game);
+
+        res.status(200);
+        return "{}";
+    }
+
+    private Object listHand(Request req, Response res) throws Exception {
+        res.type("application/json");
+        var list = new AuthRequest(req.headers("Authorization"));
+        ArrayList<GameResult> result = listS.list(list);
+
+        res.status(200);
+        res.body(new Gson().toJson(result));
+        return new Gson().toJson(result);
+    }
+
+    private Object clearHand(Request req, Response res) throws Exception {
+        res.type("application/json");
+
+        clearS.clear();
+
+        res.status(200);
+        return "{}";
     }
 }

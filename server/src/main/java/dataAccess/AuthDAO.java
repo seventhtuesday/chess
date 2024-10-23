@@ -18,22 +18,12 @@ public class AuthDAO {
 
     //returns AuthData associated to a given authToken
     public AuthData getAuth(String token) throws DataAccessException {
-        if (tokens.containsKey(token)) {
-            return tokens.get(token);
-        }
-        else {
-            throw new DataAccessException("Token not found");
-        }
+        return tokens.get(token);
     }
 
     //removes given AuthData from store
     public void deleteAuth(String token) throws DataAccessException {
-        if (tokens.containsKey(token)) {
-            tokens.remove(token);
-        }
-        else {
-            throw new DataAccessException("Token not found");
-        }
+        tokens.remove(token);
     }
 
     //clears store

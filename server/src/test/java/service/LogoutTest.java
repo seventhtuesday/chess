@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.AuthDAO;
 import model.AuthData;
+import model.AuthRequest;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,8 +24,9 @@ public class LogoutTest {
             UserData user = new UserData("good", "pass", "email@mail.com");
             //create auth for user
             AuthData data = authDAO.createAuth(user);
+            AuthRequest logout = new AuthRequest(data.authToken());
             //test logout
-            logoutS.logout(data);
+            logoutS.logout(logout);
         } catch (Exception e) {
             Assertions.fail();
         }
@@ -33,6 +35,6 @@ public class LogoutTest {
     @Test
     void testLogoutBad() {
         //test that a session that doesn't exist will error
-        Assertions.assertThrows(Exception.class, () -> logoutS.logout(new AuthData("1234", null)));
+        Assertions.assertThrows(Exception.class, () -> logoutS.logout(new AuthRequest("1234")));
     }
 }

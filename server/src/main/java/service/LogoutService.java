@@ -3,6 +3,7 @@ package service;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import model.AuthData;
+import model.AuthRequest;
 
 public class LogoutService {
     private AuthDAO authDAO;
@@ -11,7 +12,7 @@ public class LogoutService {
         this.authDAO = authDAO;
     }
 
-    public void logout(AuthData auth) throws Exception {
+    public void logout(AuthRequest auth) throws Exception {
         try {
             //check that auth token is valid
             AuthData data = authDAO.getAuth(auth.authToken());

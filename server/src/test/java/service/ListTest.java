@@ -37,7 +37,8 @@ public class ListTest {
         start.add(new GameResult(game2.gameID(), game.whiteUsername(), game2.blackUsername(), game2.gameName()));
         //test listing
         try {
-            ArrayList<GameResult> result = listS.list(auth);
+            var req = new AuthRequest(auth.authToken());
+            ArrayList<GameResult> result = listS.list(req);
             if(!result.equals(start)) {
                 throw new Exception();
             }
@@ -54,7 +55,8 @@ public class ListTest {
         AuthData auth = authDAO.createAuth(user);
         //test that will return empty set
         try {
-            Assertions.assertTrue(listS.list(auth).isEmpty());
+            var req = new AuthRequest(auth.authToken());
+            Assertions.assertTrue(listS.list(req).isEmpty());
         } catch (Exception e) {
             Assertions.fail();
         }
