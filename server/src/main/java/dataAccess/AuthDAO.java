@@ -11,8 +11,8 @@ public class AuthDAO {
 
     //Creates new AuthData from a UserData, stores the AuthData, and Returns it.
     public AuthData createAuth(UserData user) {
-        AuthData auth = new AuthData(user.username(), UUID.randomUUID().toString());
-        tokens.put(auth.username(), auth);
+        AuthData auth = new AuthData(UUID.randomUUID().toString(), user.username());
+        tokens.put(auth.authToken(), auth);
         return auth;
     }
 
@@ -22,8 +22,8 @@ public class AuthDAO {
     }
 
     //removes given AuthData from store
-    public void deleteAuth(AuthData auth) {
-        tokens.remove(auth.username());
+    public void deleteAuth(String token) {
+        tokens.remove(token);
     }
 
     //clears store
