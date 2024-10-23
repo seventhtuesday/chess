@@ -12,13 +12,14 @@ import org.junit.jupiter.api.Test;
 public class GameTest {
     static GameDAO gameDAO = new GameDAO();
     static AuthDAO authDAO = new AuthDAO();
-    static GameService gameS = new GameService(gameDAO, authDAO);
+    static GameService gameS = new GameService(authDAO, gameDAO);
 
 
 
     @BeforeEach
     void clear() throws Exception {
         gameDAO.clear();
+        authDAO.clear();
     }
 
     @Test

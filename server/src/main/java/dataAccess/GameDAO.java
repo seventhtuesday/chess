@@ -24,6 +24,10 @@ public class GameDAO {
         return new ArrayList<>(games.values());
     }
 
+    public void updateGame(GameData game) {
+        games.put(game.gameID(), game);
+    }
+
     //clears store
     public void clear() {
         games.clear();
