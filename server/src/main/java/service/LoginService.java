@@ -4,6 +4,7 @@ import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import model.AuthData;
+import model.LoginRequest;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
@@ -16,7 +17,7 @@ public class LoginService {
         this.authDAO = authDAO;
     }
 
-    public AuthData login(UserData user) throws Exception {
+    public AuthData login(LoginRequest user) throws Exception {
         try {
             //check if user exists
             UserData data = userDAO.getUser(user.username());
