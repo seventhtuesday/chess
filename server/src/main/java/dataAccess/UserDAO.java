@@ -13,8 +13,13 @@ public class UserDAO {
     }
 
     //returns UserData of given username
-    public UserData getUser(String username) {
-        return users.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        if (users.containsKey(username)) {
+            return users.get(username);
+        }
+        else  {
+            throw new DataAccessException("User not found");
+        }
     }
 
     //clears store
