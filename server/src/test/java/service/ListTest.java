@@ -1,8 +1,8 @@
 package service;
 
 import chess.ChessGame;
-import DataAccess.AuthDAO;
-import DataAccess.GameDAO;
+import data_access.AuthDAO;
+import data_access.GameDAO;
 import model.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

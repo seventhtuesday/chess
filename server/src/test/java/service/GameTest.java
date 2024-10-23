@@ -1,7 +1,7 @@
 package service;
 
-import DataAccess.AuthDAO;
-import DataAccess.GameDAO;
+import data_access.AuthDAO;
+import data_access.GameDAO;
 import model.AuthData;
 import model.CreateRequest;
 import model.UserData;

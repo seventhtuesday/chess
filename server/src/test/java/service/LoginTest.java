@@ -1,7 +1,7 @@
 package service;
 
-import DataAccess.AuthDAO;
-import DataAccess.UserDAO;
+import data_access.AuthDAO;
+import data_access.UserDAO;
 import model.LoginRequest;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;

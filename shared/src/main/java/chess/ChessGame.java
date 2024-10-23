@@ -186,7 +186,7 @@ public class ChessGame {
         }
         //same as stalemate below; check stalemate for comments
         else {
-            return Stalemate(teamColor);
+            return stalemate(teamColor);
         }
     }
 
@@ -203,11 +203,11 @@ public class ChessGame {
             return false;
         }
         else {
-            return Stalemate(teamColor);
+            return stalemate(teamColor);
         }      
     }
 
-    private boolean Stalemate(TeamColor teamColor) {
+    private boolean stalemate(TeamColor teamColor) {
         ChessPosition pos;
         ChessPiece piece;
 
