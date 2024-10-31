@@ -1,10 +1,35 @@
 package dataaccess;
 
-import model.GameData;
+import java.sql.Connection;
+import java.sql.SQLException;
+public class GameDAO {
+    private Connection conn;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+    public GameDAO() throws Exception {
+        try {
+            DatabaseManager.createDatabase();
+            try {
+                conn = DatabaseManager.getConnection();
+                String stmt = """
+                        CREATE TABLE IF NOT EXISTS GAME (
+                            `ID` int NOT NULL,
+                            `WHITENAME` varchar(255),
+                            `BLACKNAME` varchar(255),
+                            `GAMENAME` varchar(255) NOT NULL,
+                            `JSON` TEXT NOT NULL
+                        """;
+                try (var s = conn.prepareStatement(stmt)) {
+                    s.executeUpdate();
+                }
+            } catch (SQLException e) {
+                throw new Exception(String.format("Database Failure: %s", e.getMessage()));
+            }
+        } catch (DataAccessException e) {
+            throw new Exception(String.format("Database Failure: %s", e.getMessage()));
+        }
+    }
 
+/*
 public class GameDAO {
     private HashMap<Number, GameData> list = new HashMap<>();
 
@@ -37,4 +62,6 @@ public class GameDAO {
     public void clear() {
         list.clear();
     }
+ */
+
 }
