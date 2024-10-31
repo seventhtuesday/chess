@@ -6,8 +6,6 @@ import model.UserData;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class AuthDAO {
@@ -75,7 +73,10 @@ public class AuthDAO {
         try {
             var s = conn.prepareStatement("DELETE FROM AUTH WHERE TOKEN=?");
             s.setString(1, token);
-            s.executeUpdate();
+            int result = s.executeUpdate();
+            if (result == 0) {
+                throw new DataAccessException("invalid token");
+            }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
         }
