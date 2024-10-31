@@ -1,5 +1,7 @@
 package dataaccess;
 
+import model.UserData;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -30,6 +32,23 @@ public class UserDAO {
         } catch (DataAccessException e) {
             throw new Exception(String.format("Database Failure: %s", e.getMessage()));
         }
+    }
+
+    //creates new user in the table
+    public void createUser(UserData user) throws DataAccessException {
+        try {
+            var s = conn.prepareStatement("INSERT INTO USERS (NAME, PASSWORD, EMAIL) VALUE(?, ?, ?)");
+            s.setString(1, user.username());
+            s.setString(2, user.password());
+            s.setString(3, user.email());
+            s.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    public UserData getUser(String username) throws DataAccessException {
+
     }
 
     /*
