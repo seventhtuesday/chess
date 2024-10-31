@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.LoginRequest;
 import model.UserData;
@@ -9,18 +10,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class LoginTest {
-    static UserDAO userDAO = new UserDAO();
-    static AuthDAO authDAO = new AuthDAO();
+    static UserDAO userDAO;
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static LoginService loginS = new LoginService(userDAO, authDAO);
 
     @BeforeEach
-    void clear() throws Exception {
+    void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
     }
 
     @Test
-    void testLoginGood() {
+    void testLoginGood() throws DataAccessException {
         //create user
         UserData user = new UserData("good","pass", "email@mail.com");
         userDAO.createUser(user);

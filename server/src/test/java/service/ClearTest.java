@@ -11,14 +11,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ClearTest {
-    static UserDAO userDAO = new UserDAO();
-    static AuthDAO authDAO = new AuthDAO();
-    static GameDAO gameDAO = new GameDAO();
-    static ClearService clearS = new ClearService(userDAO, authDAO, gameDAO);
 
     @Test
     void testClear() {
         try {
+            UserDAO userDAO = new UserDAO();
+            AuthDAO authDAO = new AuthDAO();
+            GameDAO gameDAO = new GameDAO();
+            ClearService clearS = new ClearService(userDAO, authDAO, gameDAO);
+
             //create user
             UserData user = new UserData("good", "pass", "email@mail.com");
             userDAO.createUser(user);
@@ -34,7 +35,7 @@ public class ClearTest {
             Assertions.assertSame(auth, authDAO.getAuth(auth.authToken()));
             Assertions.assertFalse(gameDAO.getAllGames().isEmpty());
             //test clear
-            Assertions.assertDoesNotThrow(() -> clearS.clear());
+            Assertions.assertDoesNotThrow(clearS::clear);
             //test data is gone
             Assertions.assertNull(userDAO.getUser(user.username()));
             Assertions.assertNull(authDAO.getAuth(auth.authToken()));

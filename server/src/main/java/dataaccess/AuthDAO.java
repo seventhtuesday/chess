@@ -57,11 +57,14 @@ public class AuthDAO {
             var s = conn.prepareStatement("SELECT * FROM AUTH WHERE TOKEN=?");
             s.setString(1, token);
             ResultSet rs = s.executeQuery();
-            String username = rs.getString("NAME");
+            String username = "";
+            while (rs.next()) {
+                username = rs.getString("NAME");
+            }
             if(username.isEmpty()) {
                 throw new DataAccessException("invalid token");
             }
-            return new AuthData(username, token);
+            return new AuthData(token, username);
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
         }

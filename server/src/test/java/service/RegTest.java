@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
@@ -8,12 +9,22 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class RegTest {
-    static UserDAO userDAO = new UserDAO();
-    static AuthDAO authDAO = new AuthDAO();
+    static UserDAO userDAO;
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static RegService reg = new RegService(userDAO, authDAO);
 
     @BeforeEach
-    void clear() throws Exception {
+    void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
     }

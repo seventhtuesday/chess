@@ -20,9 +20,16 @@ public class Server {
     private ClearService clearS;
 
     public Server() {
-        UserDAO userDAO = new UserDAO();
-        AuthDAO authDAO = new AuthDAO();
-        GameDAO gameDAO = new GameDAO();
+        UserDAO userDAO;
+        AuthDAO authDAO;
+        GameDAO gameDAO;
+        try {
+            userDAO = new UserDAO();
+            authDAO = new AuthDAO();
+            gameDAO = new GameDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         regS = new RegService(userDAO, authDAO);
         loginS = new LoginService(userDAO, authDAO);

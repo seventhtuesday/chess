@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.CreateRequest;
@@ -10,20 +11,30 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class GameTest {
-    static GameDAO gameDAO = new GameDAO();
-    static AuthDAO authDAO = new AuthDAO();
+    static GameDAO gameDAO;
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            gameDAO = new GameDAO();
+            authDAO = new AuthDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static GameService gameS = new GameService(authDAO, gameDAO);
 
 
 
     @BeforeEach
-    void clear() throws Exception {
+    void clear() throws DataAccessException {
         gameDAO.clear();
         authDAO.clear();
     }
 
     @Test
-    void createGameGood() {
+    void createGameGood() throws DataAccessException {
         //create user
         UserData user = new UserData("good", "pass", "email@mail.com");
         //create auth for user

@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
@@ -12,18 +13,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class JoinTest {
-    static GameDAO gameDAO = new GameDAO();
-    static AuthDAO authDAO = new AuthDAO();
+    static GameDAO gameDAO;
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            gameDAO = new GameDAO();
+            authDAO = new AuthDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static JoinService joinS = new JoinService(authDAO, gameDAO);
 
     @BeforeEach
-    void clear() {
+    void clear() throws DataAccessException {
         gameDAO.clear();
         authDAO.clear();
     }
 
     @Test
-    void joinGameGood() {
+    void joinGameGood() throws DataAccessException {
         //create user
         UserData user = new UserData("good", "pass", "email@mail.com");
         //create auth for user
@@ -36,7 +47,7 @@ public class JoinTest {
     }
 
     @Test
-    void joinGameBad() {
+    void joinGameBad() throws DataAccessException {
         //create user
         UserData user = new UserData("good", "pass", "email@mail.com");
         //create auth for user

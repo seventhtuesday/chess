@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.*;
 import org.junit.jupiter.api.Assertions;
@@ -11,18 +12,28 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 public class ListTest {
-    static GameDAO gameDAO = new GameDAO();
-    static AuthDAO authDAO = new AuthDAO();
+    static GameDAO gameDAO;
+    static AuthDAO authDAO;
+
+    static {
+        try {
+            gameDAO = new GameDAO();
+            authDAO = new AuthDAO();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     static ListService listS = new ListService(authDAO, gameDAO);
 
     @BeforeEach
-    void clear() {
+    void clear() throws DataAccessException {
         gameDAO.clear();
         authDAO.clear();
     }
 
     @Test
-    void listGameGood() {
+    void listGameGood() throws DataAccessException {
         //create user
         UserData user = new UserData("good", "pass", "email@mail.com");
         //create auth for user
@@ -48,7 +59,7 @@ public class ListTest {
     }
 
     @Test
-    void listGameEmpty() {
+    void listGameEmpty() throws DataAccessException {
         //create user
         UserData user = new UserData("good", "pass", "email@mail.com");
         //create auth for user
