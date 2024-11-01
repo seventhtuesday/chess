@@ -50,7 +50,7 @@ public class AuthDAOTests {
         UserData user = new UserData("test", "password", "email@email.com");
         try {
             dao.createAuth(user);
-            Assertions.assertThrows(DataAccessException.class, () -> dao.getAuth("wrong token"));
+            Assertions.assertNull(dao.getAuth("wrong token"));
         } catch (DataAccessException e) {
             Assertions.fail();
         }

@@ -60,7 +60,7 @@ public class AuthDAO {
                 username = rs.getString("NAME");
             }
             if(username.isEmpty()) {
-                throw new DataAccessException("invalid token");
+                return null;
             }
             return new AuthData(token, username);
         } catch (SQLException e) {
@@ -69,14 +69,12 @@ public class AuthDAO {
     }
 
     //removes AuthData of given token from the table
-    public void deleteAuth(String token) throws DataAccessException {
+    public boolean deleteAuth(String name) throws DataAccessException {
         try {
-            var s = conn.prepareStatement("DELETE FROM AUTH WHERE TOKEN=?");
-            s.setString(1, token);
+            var s = conn.prepareStatement("DELETE FROM AUTH WHERE NAME=?");
+            s.setString(1, name);
             int result = s.executeUpdate();
-            if (result == 0) {
-                throw new DataAccessException("invalid token");
-            }
+            return result != 0;
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
         }

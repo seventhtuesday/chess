@@ -1,8 +1,10 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
@@ -48,7 +50,32 @@ public class UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
+        try {
+            var s = conn.prepareStatement("SELECT PASSWORD, EMAIL FROM USERS WHERE NAME=?");
+            s.setString(1, username);
+            ResultSet rs = s.executeQuery();
+            String hashedPassword = "";
+            String email = "";
+            while (rs.next()) {
+                hashedPassword = rs.getString("PASSWORD");
+                email = rs.getString("EMAIL");
+            }
+            if (hashedPassword.isEmpty() && email.isEmpty()) {
+                return null;
+            }
+            return new UserData(username, hashedPassword, email);
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
+    }
 
+    public void clear() throws DataAccessException {
+        try {
+            var s = conn.prepareStatement("TRUNCATE TABLE USERS");
+            s.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     /*

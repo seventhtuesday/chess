@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class RegService {
     private UserDAO userDAO;
@@ -26,10 +27,13 @@ public class RegService {
                 throw new Exception("already taken");
             }
             else{
+                //encrypt password
+                String hashPass = BCrypt.hashpw(newUser.password(), BCrypt.gensalt());
+                UserData user = new UserData(newUser.username(), hashPass, newUser.email());
                 //add user
-                userDAO.createUser(newUser);
+                userDAO.createUser(user);
                 //create & return auth
-                return authDAO.createAuth(newUser);
+                return authDAO.createAuth(user);
             }
 
         } catch (DataAccessException e) {
