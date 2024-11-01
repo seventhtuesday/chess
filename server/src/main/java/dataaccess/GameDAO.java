@@ -40,7 +40,7 @@ public class GameDAO {
         try {
             var s = conn.prepareStatement("INSERT INTO GAME (ID, WHITE, BLACK, NAME, JSON)");
 
-            s.setString(1, String.valueOf(game.gameID()));
+            s.setInt(1, game.gameID());
             s.setString(2, game.whiteUsername());
             s.setString(3, game.blackUsername());
             s.setString(4, game.gameName());
@@ -82,7 +82,18 @@ public class GameDAO {
     }
 
     public void updateGame(GameData game) throws DataAccessException {
+        try {
+            var s = conn.prepareStatement("UPDATE GAME SET WHITE=?, BLACK=?, NAME=?, JSON=?, WHERE ID=?");
+            s.setString(1, game.whiteUsername());
+            s.setString(2, game.blackUsername());
+            s.setString(3, game.gameName());
+            s.setString(4, new Gson().toJson(game.game()));
+            s.setInt(5, game.gameID());
 
+            s.executeUpdate();
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
+        }
     }
 
     public void clear() throws DataAccessException {
