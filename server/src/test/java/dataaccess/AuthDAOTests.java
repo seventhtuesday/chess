@@ -69,7 +69,11 @@ public class AuthDAOTests {
 
     @Test
     void testDeleteAuthBad() {
-        Assertions.assertThrows(DataAccessException.class, () -> dao.deleteAuth("wrong token"));
+        try {
+            Assertions.assertFalse(dao.deleteAuth("wrong token"));
+        } catch (DataAccessException e) {
+            Assertions.fail();
+        }
     }
 
     @Test
@@ -79,7 +83,7 @@ public class AuthDAOTests {
             AuthData auth = dao.createAuth(user);
             Assertions.assertEquals(auth, dao.getAuth(auth.authToken()));
             Assertions.assertDoesNotThrow(dao::clear);
-            Assertions.assertThrows(DataAccessException.class, () -> dao.getAuth(auth.authToken()));
+            Assertions.assertNull(dao.getAuth(auth.authToken()));
         } catch (DataAccessException e) {
             Assertions.fail();
         }
