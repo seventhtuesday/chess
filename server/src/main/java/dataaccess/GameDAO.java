@@ -78,7 +78,27 @@ public class GameDAO {
     }
 
     public ArrayList<GameData> getAllGames() throws DataAccessException {
+        try {
+            ArrayList<GameData> games = new ArrayList<>();
 
+            var s = conn.prepareStatement("SELECT * FROM GAME");
+            ResultSet rs = s.executeQuery();
+            while (rs.next()) {
+                int gameID = rs.getInt("ID");
+                String white = rs.getString("WHITE");
+                String black = rs.getString("BLACK");
+                String name = rs.getString("NAME");
+
+                String json = rs.getString("JSON");
+                ChessGame game = new Gson().fromJson(json, ChessGame.class);
+
+                games.add(new GameData(gameID, white, black, name, game));
+            }
+
+            return games;
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
+        }
     }
 
     public void updateGame(GameData game) throws DataAccessException {
