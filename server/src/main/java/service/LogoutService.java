@@ -20,7 +20,7 @@ public class LogoutService {
                 throw new Exception("unauthorized");
             }
             else {
-                authDAO.deleteAuth(data.authToken());
+                authDAO.deleteAuth(auth.authToken());
             }
         } catch (DataAccessException e) {
             throw new Exception(e.getMessage());

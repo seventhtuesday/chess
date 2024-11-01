@@ -26,7 +26,7 @@ public class LoginService {
             }
             //check if password matches
             if (BCrypt.checkpw(user.password(), data.password())) {
-                    authDAO.deleteAuth(data.username());
+                //authDAO.deleteAuth(data.username());
                 return authDAO.createAuth(data);
             } else {
                 throw new Exception("unauthorized");
