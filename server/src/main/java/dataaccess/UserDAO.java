@@ -17,12 +17,9 @@ public class UserDAO {
                 conn = DatabaseManager.getConnection();
                 String stmt = """
                         CREATE TABLE IF NOT EXISTS USERS (
-                            `ID` int NOT NULL AUTO_INCREMENT,
                             `NAME` varchar(255) NOT NULL,
                             `PASSWORD` varchar(255) NOT NULL,
-                            `EMAIL` varchar(255) NOT NULL,
-                            PRIMARY KEY (`ID`),
-                            INDEX(ID)
+                            `EMAIL` varchar(255) NOT NULL
                         )
                         """;
                 try (var s = conn.prepareStatement(stmt)) {

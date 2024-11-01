@@ -43,8 +43,8 @@ public class GameDAOTests {
                 "name", new ChessGame());
 
         try {
-            GameData g = dao.getGame(game.gameID());
-            Assertions.assertEquals(g, game);
+            dao.createGame(game);
+            Assertions.assertEquals(game, dao.getGame(game.gameID()));
         } catch (DataAccessException e) {
             Assertions.fail();
         }

@@ -24,6 +24,7 @@ public class GameDAO {
                             `BLACK` varchar(255),
                             `NAME` varchar(255) NOT NULL,
                             `JSON` TEXT NOT NULL
+                        )
                         """;
                 try (var s = conn.prepareStatement(stmt)) {
                     s.executeUpdate();
@@ -38,7 +39,7 @@ public class GameDAO {
 
     public void createGame(GameData game) throws DataAccessException {
         try {
-            var s = conn.prepareStatement("INSERT INTO GAME (ID, WHITE, BLACK, NAME, JSON)");
+            var s = conn.prepareStatement("INSERT INTO GAME (ID, WHITE, BLACK, NAME, JSON) VALUES(?, ?, ?, ?, ?)");
 
             s.setInt(1, game.gameID());
             s.setString(2, game.whiteUsername());
@@ -56,8 +57,8 @@ public class GameDAO {
 
     public GameData getGame(int gameID) throws DataAccessException {
         try {
-            var s = conn.prepareStatement("SELECT * FROM GAME WHERE ID = " + gameID);
-            s.setString(1, String.valueOf(gameID));
+            var s = conn.prepareStatement("SELECT * FROM GAME WHERE ID=?");
+            s.setInt(1, gameID);
             ResultSet rs = s.executeQuery();
             if (rs.next()) {
                 String white = rs.getString("WHITE");
@@ -103,14 +104,17 @@ public class GameDAO {
 
     public void updateGame(GameData game) throws DataAccessException {
         try {
-            var s = conn.prepareStatement("UPDATE GAME SET WHITE=?, BLACK=?, NAME=?, JSON=?, WHERE ID=?");
+            var s = conn.prepareStatement("UPDATE GAME SET WHITE=?, BLACK=?, NAME=?, JSON=? WHERE ID=?");
             s.setString(1, game.whiteUsername());
             s.setString(2, game.blackUsername());
             s.setString(3, game.gameName());
             s.setString(4, new Gson().toJson(game.game()));
             s.setInt(5, game.gameID());
 
-            s.executeUpdate();
+            int result = s.executeUpdate();
+            if(result == 0) {
+                throw new DataAccessException("Database Failure: that game does not exist");
+            }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Database Failure: %s", e.getMessage()));
         }
