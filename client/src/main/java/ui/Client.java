@@ -13,7 +13,6 @@ import static ui.EscapeSequences.*;
 public class Client {
     public static UserState uState;
     private ServerFacade sv;
-    private String url;
     private LoopR loop;
     private ArrayList<GameResult> games;
     private ConcurrentHashMap<Integer, GameData> gameObj;
@@ -23,7 +22,6 @@ public class Client {
 
     public Client(String url, LoopR loop) {
         uState = UserState.LOGGED_OUT;
-        this.url = url;
         this.loop = loop;
         sv = new ServerFacade(url);
     }
@@ -67,6 +65,133 @@ public class Client {
         }
 
         return "bad request: double check parameters";
+    }
+
+    private String login(String[] params) {
+        if (uState == UserState.LOGGED_IN) {
+            return "Logout before logining a new user";
+        }
+        if (params.length == 2) {
+            UserData user = new UserData(params[0], params[1], null);
+            try {
+                auth = sv.login(user);
+            } catch (Exception e) {
+                return "invalid login";
+            }
+            uState = UserState.LOGGED_IN;
+            return "Logged in as " + auth.username();
+        }
+        return "bad request: double check parameters";
+    }
+
+    private String logout(String[] params) {
+        if (uState == UserState.LOGGED_OUT) {
+            return "you must be logged in to logout";
+        }
+        uState = UserState.LOGGED_OUT;
+        try {
+            sv.logout();
+        } catch (Exception e) {
+            return "unable to log out";
+        }
+        return "Logged out as " + auth.username();
+    }
+
+    private String create(String[] params) {
+        if (uState == UserState.LOGGED_OUT) {
+            return "Must be logged in to create a game";
+        }
+        String name = String.join(" ", params);
+        Integer gameID;
+        try {
+            gameID = sv.create(name);
+            games = sv.list();
+            game = new GameData(gameID, null, null, name, new ChessGame());
+            gameObj.put(gameID, game);
+            return "Created game " + gameID + ": " + name;
+        } catch (Exception e) {
+            return "unable to create game";
+        }
+    }
+
+    private String join(String[] params) {
+        if (uState == UserState.LOGGED_OUT) {
+            return "Must be logged in to join a game";
+        }
+
+        try {
+            games = sv.list();
+            int ID = Integer.parseInt(params[0]);
+            game = gameObj.get(ID);
+            var color = params[1].toUpperCase();
+            ChessGame.TeamColor tempteam = null;
+
+            if (color.equals("WHITE") || color.equals("BLACK")) {
+                tempteam = ChessGame.TeamColor.valueOf(color);
+            }
+            else if (game.whiteUsername() != null) {
+                return "team already occupied";
+            }
+            else {
+                return "invalid team";
+            }
+
+            sv.join(new JoinRequest(tempteam, ID, auth.authToken()));
+
+            if(tempteam == ChessGame.TeamColor.BLACK) {
+                game = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
+            } else if (tempteam == ChessGame.TeamColor.WHITE) {
+                game = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
+            }
+
+            gameObj.put(ID, game);
+            uState = UserState.IN_GAME;
+            team = tempteam;
+            return "";
+
+        } catch (Exception e) {
+            return "unable to join game";
+        }
+    }
+
+    private String list(String[] params) {
+        if (uState == UserState.LOGGED_OUT) {
+            return "Must be logged in to list games";
+        }
+        try {
+            games = sv.list();
+        } catch (Exception e) {
+            return "error: list update failed";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(String.format("| ID | %-14s| %14s| %-12s|\n", "White", "Black", "Name"));
+        sb.append("\n");
+
+        for (GameResult each : games) {
+            sb.append(String.format("| %-4d| %-14s| %-14s| %-12s|\n", each.gameID(), each.whiteUsername(), each.blackUsername(), each.gameName()));
+        }
+
+        return String.valueOf(sb);
+    }
+
+    private String observe(String[] params) {
+        if (uState == UserState.LOGGED_OUT) {
+            return "Must be logged in to observe";
+        }
+        try {
+            games = sv.list();
+            int ID = Integer.parseInt(params[0]);
+            game = gameObj.get(ID);
+
+            sv.join(new JoinRequest(null, ID, auth.authToken()));
+            uState = UserState.IN_GAME;
+            return "";
+
+        } catch (Exception e) {
+            return "unable to observe";
+        }
     }
 
     private String help() {
