@@ -23,13 +23,17 @@ public class JoinService {
         try {
             GameData game = gameDAO.getGame(joinRequest.gameID());
             //check for bad input
-            if (joinRequest.authToken() == null || joinRequest.playerColor() == null || game == null) {
+            if (joinRequest.authToken() == null || game == null) {
                 throw new Exception("bad request");
             }
             //verify authToken
             AuthData auth = authDAO.getAuth(joinRequest.authToken());
             if (auth == null) {
                 throw new Exception("unauthorized");
+            }
+            //return if observing
+            if(joinRequest.playerColor() == null) {
+                return;
             }
             //check for team already taken
             if((joinRequest.playerColor().equals(WHITE) && game.whiteUsername() != null) ||

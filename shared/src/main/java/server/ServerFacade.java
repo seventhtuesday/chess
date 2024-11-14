@@ -52,7 +52,7 @@ public class ServerFacade {
 
     public void join(JoinRequest join) throws Exception {
         String path = "/game";
-        this.request("POST", path, join, null);
+        this.request("PUT", path, join, null);
     }
 
     public ArrayList<GameResult> list() throws Exception {

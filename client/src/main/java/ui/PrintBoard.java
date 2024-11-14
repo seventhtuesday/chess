@@ -14,7 +14,6 @@ public class PrintBoard {
 
     public static void run(ChessGame game, ChessGame.TeamColor team) {
         var ps = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-        var board = game.getBoard();
 
         ps.println(ERASE_SCREEN);
 
@@ -64,6 +63,7 @@ public class PrintBoard {
             ps.print(SET_BG_COLOR_DARK_GREY);
             ps.print(SET_TEXT_COLOR_BLACK);
             ps.print(" " + i + " ");
+            ps.print("\n");
         }
     }
 
@@ -75,7 +75,7 @@ public class PrintBoard {
             ps.print(SET_TEXT_COLOR_BLACK);
             ps.print(" " + i + " ");
 
-            for (int j = 0; j <= 8; j++) {
+            for (int j = 1; j <= 8; j++) {
                 if ((i+j) % 2 == 0) {
                     ps.print(SET_BG_COLOR_BLACK);
                     printPiece(ps, board.getPiece(new ChessPosition(i, j)));
@@ -89,11 +89,16 @@ public class PrintBoard {
             ps.print(SET_BG_COLOR_DARK_GREY);
             ps.print(SET_TEXT_COLOR_BLACK);
             ps.print(" " + i + " ");
+            ps.print("\n");
         }
     }
 
     private static void printPiece(PrintStream ps, ChessPiece piece) {
-        if(piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+        if(piece == null) {
+            ps.print("   ");
+            return;
+        }
+        else if(piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
             ps.print(SET_TEXT_COLOR_BLUE);
         }
         else {
@@ -119,8 +124,6 @@ public class PrintBoard {
             case KING:
                 ps.print(" K ");
                 break;
-            default:
-                ps.print("   ");
         }
     }
 }

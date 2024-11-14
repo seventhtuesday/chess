@@ -15,7 +15,7 @@ public class Client {
     private ServerFacade sv;
     private LoopR loop;
     private ArrayList<GameResult> games;
-    private ConcurrentHashMap<Integer, GameData> gameObj;
+    private ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
     private GameData game;
     private ChessGame.TeamColor team;
     private AuthData auth;
@@ -139,9 +139,11 @@ public class Client {
             sv.join(new JoinRequest(tempteam, ID, auth.authToken()));
 
             if(tempteam == ChessGame.TeamColor.BLACK) {
-                game = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
+                GameData tempGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
+                game = tempGame;
             } else if (tempteam == ChessGame.TeamColor.WHITE) {
-                game = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
+                var tempGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
+                game = tempGame;
             }
 
             gameObj.put(ID, game);

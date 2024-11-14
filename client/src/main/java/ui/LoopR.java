@@ -19,7 +19,7 @@ public class LoopR {
         var out = "";
 
         while (!out.equals("quit")) {
-            System.out.print(SET_TEXT_COLOR_BLACK + "/n" + "[" + Client.uState + "] >>> " + SET_TEXT_COLOR_GREEN);
+            System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_BLACK + "[" + Client.uState + "] >>> " + SET_TEXT_COLOR_GREEN);
 
             String in = sc.nextLine();
 
