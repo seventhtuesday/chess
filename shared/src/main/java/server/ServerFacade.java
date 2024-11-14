@@ -44,9 +44,10 @@ public class ServerFacade {
         token = null;
     }
 
-    public Integer create(String name) throws Exception {
+    public Integer create(CreateRequest cre) throws Exception {
         String path = "/game";
-        return this.request("POST", path, name, Integer.class);
+        var res = this.request("POST", path, cre, CreateResult.class);
+        return res.gameID();
     }
 
     public void join(JoinRequest join) throws Exception {

@@ -69,7 +69,7 @@ public class Client {
 
     private String login(String[] params) {
         if (uState == UserState.LOGGED_IN) {
-            return "Logout before logining a new user";
+            return "Logout before logging in a new user";
         }
         if (params.length == 2) {
             UserData user = new UserData(params[0], params[1], null);
@@ -104,7 +104,7 @@ public class Client {
         String name = String.join(" ", params);
         Integer gameID;
         try {
-            gameID = sv.create(name);
+            gameID = sv.create(new CreateRequest(name, auth.authToken()));
             games = sv.list();
             game = new GameData(gameID, null, null, name, new ChessGame());
             gameObj.put(gameID, game);
@@ -147,6 +147,9 @@ public class Client {
             gameObj.put(ID, game);
             uState = UserState.IN_GAME;
             team = tempteam;
+
+            PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
+            PrintBoard.run(game.game(), ChessGame.TeamColor.WHITE);
             return "";
 
         } catch (Exception e) {
@@ -187,6 +190,9 @@ public class Client {
 
             sv.join(new JoinRequest(null, ID, auth.authToken()));
             uState = UserState.IN_GAME;
+
+            PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
+            PrintBoard.run(game.game(), ChessGame.TeamColor.WHITE);
             return "";
 
         } catch (Exception e) {
@@ -224,5 +230,9 @@ public class Client {
             ans.append("\n");
         }
         return ans.toString();
+    }
+
+    public UserState getUserState() {
+        return uState;
     }
 }

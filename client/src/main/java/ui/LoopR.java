@@ -26,7 +26,6 @@ public class LoopR {
             try {
                 out = cli.out(in);
                 System.out.println(SET_TEXT_COLOR_BLUE + out);
-                if ()
             } catch (Throwable e) {
                 System.out.println(e.getMessage());
             }
