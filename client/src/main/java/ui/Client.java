@@ -171,11 +171,11 @@ public class Client {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n");
-        sb.append(String.format("| ID | %-14s| %14s| %-12s|\n", "White", "Black", "Name"));
+        sb.append(String.format("| ID | %-14s | %14s | %-12s |\n", "White", "Black", "Name"));
         sb.append("\n");
 
         for (GameResult each : games) {
-            sb.append(String.format("| %-4d| %-14s| %-14s| %-12s|\n", each.gameID(), each.whiteUsername(), each.blackUsername(), each.gameName()));
+            sb.append(String.format("| %-4d | %-14s | %-14s | %-12s |\n", each.gameID(), each.whiteUsername(), each.blackUsername(), each.gameName()));
         }
 
         return String.valueOf(sb);

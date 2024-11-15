@@ -60,6 +60,11 @@ public class ServerFacade {
         return this.request("GET", path, null, ListResult.class).games();
     }
 
+    public void clear() throws Exception {
+        String path = "/db";
+        this.request("DELETE", path, null, null);
+    }
+
     private <T> T request(String method, String path, Object request, Class<T> response) throws Exception {
         try {
             URL url = (new URI(this.url + path)).toURL();
