@@ -120,8 +120,8 @@ public class Client {
         try {
             games = sv.list();
             int index = Integer.parseInt(params[0]) - 1;
-            int ID = games.get(index).gameID();
-            game = gameObj.get(ID);
+            int id = games.get(index).gameID();
+            game = gameObj.get(id);
             var color = params[1].toUpperCase();
             ChessGame.TeamColor tempteam = null;
 
@@ -135,7 +135,7 @@ public class Client {
                 return "invalid team";
             }
 
-            sv.join(new JoinRequest(tempteam, ID, auth.authToken()));
+            sv.join(new JoinRequest(tempteam, id, auth.authToken()));
 
             if(tempteam == ChessGame.TeamColor.BLACK) {
                 GameData tempGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
@@ -145,7 +145,7 @@ public class Client {
                 game = tempGame;
             }
 
-            gameObj.put(ID, game);
+            gameObj.put(id, game);
             uState = UserState.IN_GAME;
             team = tempteam;
 
@@ -174,7 +174,8 @@ public class Client {
         sb.append("\n");
 
         for (int n = 0; n < games.size(); n++) {
-            sb.append(String.format("| %-4d | %-14s | %-14s | %-12s |\n", n+1, games.get(n).whiteUsername(), games.get(n).blackUsername(), games.get(n).gameName()));
+            sb.append(String.format("| %-4d | %-14s | %-14s | %-12s |\n",
+                    n+1, games.get(n).whiteUsername(), games.get(n).blackUsername(), games.get(n).gameName()));
         }
 
         return String.valueOf(sb);
@@ -187,8 +188,8 @@ public class Client {
         try {
             games = sv.list();
             int index = Integer.parseInt(params[0]) - 1;
-            int ID = games.get(index).gameID();
-            game = gameObj.get(ID);
+            int id = games.get(index).gameID();
+            game = gameObj.get(id);
 
             uState = UserState.IN_GAME;
 

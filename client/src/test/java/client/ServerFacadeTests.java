@@ -14,7 +14,7 @@ public class ServerFacadeTests {
 
     private static Server server;
     static ServerFacade sf;
-    static Integer ID;
+    static Integer id;
     static AuthData auth;
 
     @BeforeAll
@@ -31,7 +31,7 @@ public class ServerFacadeTests {
         try {
             sf.clear();
             auth = sf.register(new UserData("test", "test", "test@email.com"));
-            ID = sf.create(new CreateRequest("test", auth.authToken()));
+            id = sf.create(new CreateRequest("test", auth.authToken()));
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -112,10 +112,10 @@ public class ServerFacadeTests {
     @Test
     public void joinGood() {
         try {
-            sf.join(new JoinRequest(ChessGame.TeamColor.BLACK, ID, auth.authToken()));
+            sf.join(new JoinRequest(ChessGame.TeamColor.BLACK, id, auth.authToken()));
             Collection<GameResult> games = sf.list();
             Collection<GameResult> real = new ArrayList<>();
-            real.add(new GameResult(ID, null, "test", "test"));
+            real.add(new GameResult(id, null, "test", "test"));
             Assertions.assertEquals(real, games);
         } catch (Exception e) {
             Assertions.fail();
