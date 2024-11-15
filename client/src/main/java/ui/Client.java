@@ -4,7 +4,6 @@ import chess.ChessGame;
 import model.*;
 import server.ServerFacade;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -191,7 +190,6 @@ public class Client {
             int ID = games.get(index).gameID();
             game = gameObj.get(ID);
 
-            sv.join(new JoinRequest(null, ID, auth.authToken()));
             uState = UserState.IN_GAME;
 
             PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
