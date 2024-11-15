@@ -4,6 +4,7 @@ import chess.ChessGame;
 import model.*;
 import server.ServerFacade;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +14,6 @@ import static ui.EscapeSequences.*;
 public class Client {
     public static UserState uState;
     private ServerFacade sv;
-    private LoopR loop;
     private ArrayList<GameResult> games;
     private ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
     private GameData game;
@@ -22,7 +22,6 @@ public class Client {
 
     public Client(String url, LoopR loop) {
         uState = UserState.LOGGED_OUT;
-        this.loop = loop;
         sv = new ServerFacade(url);
     }
 
@@ -121,7 +120,8 @@ public class Client {
 
         try {
             games = sv.list();
-            int ID = Integer.parseInt(params[0]);
+            int index = Integer.parseInt(params[0]) - 1;
+            int ID = games.get(index).gameID();
             game = gameObj.get(ID);
             var color = params[1].toUpperCase();
             ChessGame.TeamColor tempteam = null;
@@ -174,8 +174,8 @@ public class Client {
         sb.append(String.format("| ID | %-14s | %14s | %-12s |\n", "White", "Black", "Name"));
         sb.append("\n");
 
-        for (GameResult each : games) {
-            sb.append(String.format("| %-4d | %-14s | %-14s | %-12s |\n", each.gameID(), each.whiteUsername(), each.blackUsername(), each.gameName()));
+        for (int n = 0; n < games.size(); n++) {
+            sb.append(String.format("| %-4d | %-14s | %-14s | %-12s |\n", n+1, games.get(n).whiteUsername(), games.get(n).blackUsername(), games.get(n).gameName()));
         }
 
         return String.valueOf(sb);
@@ -187,7 +187,8 @@ public class Client {
         }
         try {
             games = sv.list();
-            int ID = Integer.parseInt(params[0]);
+            int index = Integer.parseInt(params[0]) - 1;
+            int ID = games.get(index).gameID();
             game = gameObj.get(ID);
 
             sv.join(new JoinRequest(null, ID, auth.authToken()));
