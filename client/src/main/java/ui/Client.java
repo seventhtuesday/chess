@@ -12,9 +12,9 @@ import static ui.EscapeSequences.*;
 
 public class Client {
     public static UserState uState;
-    private ServerFacade sv;
+    private final ServerFacade sv;
     private ArrayList<GameResult> games;
-    private ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
     private GameData game;
     private ChessGame.TeamColor team;
     private AuthData auth;
