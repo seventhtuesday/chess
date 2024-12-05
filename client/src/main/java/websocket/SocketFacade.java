@@ -16,12 +16,11 @@ import websocket.messages.NotifyMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
-import java.io.IOException;
 import java.net.URI;
 
 public class SocketFacade extends Endpoint {
-    private Session session;
-    private LoopR loopR;
+    private final Session session;
+    private final LoopR loopR;
 
     public SocketFacade(String url, LoopR loop) {
         try {

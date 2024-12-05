@@ -14,7 +14,6 @@ import static ui.EscapeSequences.*;
 public class Client {
     public static UserState uState;
     private final ServerFacade sv;
-    private final LoopR loop;
     private final SocketFacade ws;
     private ArrayList<GameResult> games;
     private final ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
@@ -25,7 +24,6 @@ public class Client {
     public Client(String url, LoopR loop) {
         uState = UserState.LOGGED_OUT;
         sv = new ServerFacade(url);
-        this.loop = loop;
         ws = new SocketFacade(url, loop);
     }
 
@@ -222,7 +220,7 @@ public class Client {
             sv.join(new JoinRequest(tempteam, id, auth.authToken()));
 
             if(tempteam == ChessGame.TeamColor.BLACK) {
-                GameData tempGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
+                var tempGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
                 game = tempGame;
             } else if (tempteam == ChessGame.TeamColor.WHITE) {
                 var tempGame = new GameData(game.gameID(), auth.username(), game.blackUsername(), game.gameName(), game.game());
