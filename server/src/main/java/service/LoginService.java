@@ -35,4 +35,12 @@ public class LoginService {
             throw new Exception(e.getMessage());
         }
     }
+
+    public String getUsername(String authToken) throws DataAccessException {
+        var auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            return null;
+        }
+        return auth.username();
+    }
 }
