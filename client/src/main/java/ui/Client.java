@@ -61,7 +61,7 @@ public class Client {
             return "You are not in a game";
         }
         if(params.length != 1) {
-            return "only enter one start position"
+            return "only enter one start position";
         }
 
         PrintBoard.highlight(game.game(), team, interpretMove(params[0]));

@@ -1,9 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -14,7 +11,6 @@ public class PrintBoard {
 
     public static void run(ChessGame game, ChessGame.TeamColor team) {
         var ps = new PrintStream(System.out, true, StandardCharsets.UTF_8);
-
         ps.println(ERASE_SCREEN);
 
         if(team == ChessGame.TeamColor.BLACK) {
@@ -124,6 +120,80 @@ public class PrintBoard {
             case KING:
                 ps.print(" K ");
                 break;
+        }
+    }
+
+    public static void highlight(ChessGame game, ChessGame.TeamColor team, ChessPosition start) {
+        var ps = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        ps.println(ERASE_SCREEN);
+
+        if(team == ChessGame.TeamColor.BLACK) {
+            blackHead(ps);
+            blackBoardHigh(ps, game, start);
+            blackHead(ps);
+        }
+        else if(team == ChessGame.TeamColor.WHITE) {
+            whiteHead(ps);
+            whiteBoardHigh(ps, game, start);
+            whiteHead(ps);
+        }
+    }
+
+    private static void blackBoardHigh(PrintStream ps, ChessGame game, ChessPosition start) {
+        ChessBoard board = game.getBoard();
+        var moves = game.validMoves(start);
+
+        for (int i = 1; i <= 8; i++) {
+            ps.print(SET_BG_COLOR_DARK_GREY);
+            ps.print(SET_TEXT_COLOR_BLACK);
+            ps.print(" " + i + " ");
+
+            for (int j = 8; j >= 1; j--) {
+                var end = new ChessPosition(i, j);
+
+                if (moves.contains(new ChessMove(start, end))) {
+                    ps.print(SET_BG_COLOR_GREEN);
+                } else if ((i + j) % 2 == 1) {
+                    ps.print(SET_BG_COLOR_LIGHT_GREY);
+                } else {
+                    ps.print(SET_BG_COLOR_BLACK);
+                }
+                printPiece(ps, board.getPiece(new ChessPosition(i, j)));
+            }
+
+            ps.print(SET_BG_COLOR_DARK_GREY);
+            ps.print(SET_TEXT_COLOR_BLACK);
+            ps.print(" " + i + " ");
+            ps.print("\n");
+        }
+    }
+
+    private static void whiteBoardHigh(PrintStream ps, ChessGame game, ChessPosition start) {
+        ChessBoard board = game.getBoard();
+        var moves = game.validMoves(start);
+
+        for (int i = 8; i >= 1; i--) {
+            ps.print(SET_BG_COLOR_DARK_GREY);
+            ps.print(SET_TEXT_COLOR_BLACK);
+            ps.print(" " + i + " ");
+
+            for (int j = 1; j <= 8; j++) {
+                var end = new ChessPosition(i, j);
+
+                if (moves.contains(new ChessMove(start, end))) {
+                    ps.print(SET_BG_COLOR_GREEN);
+                } else if ((i + j) % 2 == 0) {
+                    ps.print(SET_BG_COLOR_LIGHT_GREY);
+                } else {
+                    ps.print(SET_BG_COLOR_BLACK);
+                }
+                printPiece(ps, board.getPiece(new ChessPosition(i, j)));
+            }
+
+            ps.print(SET_BG_COLOR_DARK_GREY);
+            ps.print(SET_TEXT_COLOR_BLACK);
+            ps.print(" " + i + " ");
+            ps.print("\n");
         }
     }
 }
