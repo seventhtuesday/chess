@@ -218,6 +218,7 @@ public class Client {
             }
 
             sv.join(new JoinRequest(tempteam, id, auth.authToken()));
+            ws.connect(auth.authToken(), id, tempteam);
 
             if(tempteam == ChessGame.TeamColor.BLACK) {
                 var tempGame = new GameData(game.gameID(), game.whiteUsername(), auth.username(), game.gameName(), game.game());
@@ -273,6 +274,7 @@ public class Client {
             int id = games.get(index).gameID();
             game = gameObj.get(id);
 
+            ws.connect(auth.authToken(), id, null);
             uState = UserState.IN_GAME;
 
             PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
