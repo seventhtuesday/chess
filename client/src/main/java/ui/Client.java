@@ -1,6 +1,6 @@
 package ui;
 
-import chess.ChessGame;
+import chess.*;
 import model.*;
 import server.ServerFacade;
 import websocket.SocketFacade;
@@ -56,12 +56,78 @@ public class Client {
         }
     }
 
+    private String highlight(String[] params) throws Exception {
+        if (uState != UserState.IN_GAME) {
+            return "You are not in a game";
+        }
+        if(params.length != 1) {
+            return "only enter one start position"
+        }
+
+        PrintBoard.highlight(game.game(), team, interpretMove(params[0]));
+        return "";
+    }
+
+    private String move(String[] params) throws Exception {
+        if (uState != UserState.IN_GAME) {
+            return "You are not in a game";
+        }
+        if (params.length < 2) {
+            return "Invalid Move";
+        }
+
+        var start = params[0];
+        var end = params[1];
+        ChessPosition startPos = interpretMove(start.toUpperCase());
+        ChessPosition endPos = interpretMove(end.toUpperCase());
+
+        ChessPiece.PieceType promotion = null;
+        if (params[2] != null) {
+            promotion = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+        }
+        ChessMove move = new ChessMove(startPos, endPos, promotion);
+        ws.move(auth.authToken(), game.gameID(), move);
+        return "";
+    }
+
+    private ChessPosition interpretMove(String location) throws Exception {
+        if (location.length() != 2) {
+            throw new Exception("Invalid position" + location);
+        }
+
+        var col = (int) location.charAt(0) - 64;
+        int row = Integer.parseInt(location.substring(1));
+        return new ChessPosition(row, col);
+
+    }
+
+    private String resign() {
+        if (uState != UserState.IN_GAME) {
+            return "You are not in a game";
+        }
+
+        ws.resign(auth.authToken(), game.gameID());
+        uState = UserState.LOGGED_IN;
+        return "";
+    }
+
+    private String leave() {
+        if (uState != UserState.IN_GAME) {
+            return "You are not in a game";
+        }
+
+        ws.leave(auth.authToken(), game.gameID());
+        uState = UserState.LOGGED_IN;
+        return "";
+    }
+
     private String redraw() {
         if (uState != UserState.IN_GAME) {
-            throw new IllegalStateException("You are not in a game");
+            return "You are not in a game";
         }
 
         PrintBoard.run(game.game(), team);
+        return "";
     }
 
     private String register(String[] params) {
