@@ -1,18 +1,24 @@
 package websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import service.GameService;
+import service.LoginService;
 import websocket.commands.*;
 import websocket.messages.ErrorMessage;
+import websocket.messages.LoadMessage;
+import websocket.messages.NotifyMessage;
+import websocket.messages.ServerMessage;
 
 @WebSocket
 public class WebSocketHandler {
     private WebSocketService webSocketService = new WebSocketService();
     private GameService gameService;
+    private LoginService loginService;
 
     public WebSocketHandler(GameService gameService) {
         this.gameService = gameService;
@@ -52,28 +58,54 @@ public class WebSocketHandler {
     }
 
     private void connect(ConnectCommand connectCommand, Session session) throws Exception {
-        String user = connectCommand.getAuthToken();
+        String user = loginService.getUsername(connectCommand.getAuthToken());
         if(user == null) {
             var message = new ErrorMessage("authentication failure");
+            sendMessage(message, session);
+            return;
         }
         int id = connectCommand.getGameID();
         var gameData = gameService.getGame(id);
         if (gameData == null) {
             var message = new ErrorMessage("that game doesn't exist");
+            sendMessage(message, session);
+            return;
         }
-
         webSocketService.add(id, new Sesh(user, session));
+        var team = connectCommand.getTeamColor();
+        ServerMessage message = null;
+        if(team == null) {
+            message = new NotifyMessage("joined as Observer");
+            sendMessage(message, session);
+        }
+        else if (team == ChessGame.TeamColor.WHITE) {
+            message = new NotifyMessage("joined as WHITE");
+            sendMessage(message, session);
+            message = new NotifyMessage(user + " has joined as " + team.toString());
+            broadcast(id, message, session);
+        }
+        else if (team == ChessGame.TeamColor.BLACK) {
+            message = new NotifyMessage("joined as BLACK");
+            sendMessage(message, session);
+            message = new NotifyMessage(user + " has joined as " + team.toString());
+            broadcast(id, message, session);
+        }
+        message = new LoadMessage(gameData);
+        broadcast(id, message, null);
     }
 
     private void move(MoveCommand moveCommand) {
 
     }
 
-    private void sendMessage(String message, Session session) {
+    private void sendMessage(ServerMessage message, Session session) {
+        message.
+        if(session.isOpen()) {
 
+        }
     }
 
-    private void broadcast(int gameID, String message, Session exempt) {
+    private void broadcast(int gameID, ServerMessage message, Session exempt) {
 
     }
 }
