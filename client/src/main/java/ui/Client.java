@@ -26,7 +26,7 @@ public class Client {
         uState = UserState.LOGGED_OUT;
         sv = new ServerFacade(url);
         this.loop = loop;
-        ws = new SocketFacade();
+        ws = new SocketFacade(url, loop);
     }
 
     public String out(String in) {
@@ -54,6 +54,14 @@ public class Client {
         } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    private String redraw() {
+        if (uState != UserState.IN_GAME) {
+            throw new IllegalStateException("You are not in a game");
+        }
+
+        PrintBoard.run(game.game(), team);
     }
 
     private String register(String[] params) {
