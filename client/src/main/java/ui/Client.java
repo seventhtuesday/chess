@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import model.*;
 import server.ServerFacade;
+import websocket.SocketFacade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,8 @@ import static ui.EscapeSequences.*;
 public class Client {
     public static UserState uState;
     private final ServerFacade sv;
+    private final LoopR loop;
+    private final SocketFacade ws;
     private ArrayList<GameResult> games;
     private final ConcurrentHashMap<Integer, GameData> gameObj = new ConcurrentHashMap<>();
     private GameData game;
@@ -22,6 +25,8 @@ public class Client {
     public Client(String url, LoopR loop) {
         uState = UserState.LOGGED_OUT;
         sv = new ServerFacade(url);
+        this.loop = loop;
+        ws = new SocketFacade();
     }
 
     public String out(String in) {
@@ -37,8 +42,13 @@ public class Client {
                 case "create" -> create(params);
                 case "join" -> join(params);
                 case "list" -> list(params);
-                case "observe" -> observe (params);
+                case "observe" -> observe(params);
                 case "quit" -> "quit";
+                case "redraw" -> redraw();
+                case "leave" -> leave();
+                case "resign" -> resign();
+                case "move" -> move(params);
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (Exception e) {
@@ -62,7 +72,7 @@ public class Client {
             return "Logged in as " + auth.username();
         }
 
-        return "bad request: double check parameters";
+        return "bad request: invalid credentials";
     }
 
     private String login(String[] params) {
@@ -79,7 +89,7 @@ public class Client {
             uState = UserState.LOGGED_IN;
             return "Logged in as " + auth.username();
         }
-        return "bad request: double check parameters";
+        return "bad request: invalid credentials";
     }
 
     private String logout(String[] params) {
@@ -210,11 +220,20 @@ public class Client {
             cmds = new String[] {"register <USERNAME> <PASSWORD> <EMAIL>", "login <USERNAME> <PASSWORD>", "quit", "help"};
             descrip = new String[] {"create an account", "login to existing account", "quit the app", "list available commands"};
         }
+        else if(uState == UserState.IN_GAME) {
+            cmds = new String[]{"redraw", "move <START> <END> [<PIECE>|<empty>]", "highlight <START>", "resign", "leave", "help"};
+            descrip = new String[]{"redraw the chess board",
+                    "move a piece from <START> to <END>; use <PIECE> if promoting a pawn to designate promotion",
+                    "highlight the legal moves for the piece at <START>",
+                    "resign the game",
+                    "leave the game",
+                    "list available commands"};
+        }
         else {
             cmds = new String[] {"create <NAME>", "list", "join <ID> [WHITE|BLACK|<empty>]", "observe <ID>", "logout", "quit", "help"};
             descrip = new String[]{"create a game with provided name",
                     "list all games",
-                    "joins the provided game to play as the provided team",
+                    "join the provided game to play as the provided team",
                     "watch the provided game",
                     "logs out the current user",
                     "quit the app",

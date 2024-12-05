@@ -1,11 +1,16 @@
 package ui;
 
+import chess.ChessGame;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadMessage;
+import websocket.messages.NotifyMessage;
+
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
 public class LoopR {
-    private Client cli;
+    private final Client cli;
 
     public LoopR(String url) {
         cli = new Client(url, this);
@@ -19,7 +24,7 @@ public class LoopR {
         var out = "";
 
         while (!out.equals("quit")) {
-            System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_BLACK + "[" + Client.uState + "] >>> " + SET_TEXT_COLOR_GREEN);
+            prompt();
 
             String in = sc.nextLine();
 
@@ -32,5 +37,26 @@ public class LoopR {
         }
 
         System.out.println();
+    }
+
+    public void notify(NotifyMessage message) {
+        System.out.print(SET_TEXT_COLOR_YELLOW + message.getMessage());
+        prompt();
+    }
+
+    public void load(LoadMessage message) {
+        var game = message.getGameData();
+        var team = message.getTeamColor();
+        PrintBoard.run(game.game(), team);
+        prompt();
+    }
+
+    public void error(ErrorMessage message) {
+        System.out.print(SET_TEXT_COLOR_RED + message.getErrorMess());
+        prompt();
+    }
+
+    private void prompt() {
+        System.out.print(SET_BG_COLOR_WHITE + SET_TEXT_COLOR_BLACK + "[" + Client.uState + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
 }
