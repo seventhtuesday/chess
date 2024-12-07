@@ -18,12 +18,6 @@ public class WebSocketService {
         sessions.get(gameID).remove(session);
     }
 
-    public void removeSession(Sesh session) {
-        for (Set<Sesh> sessionSet : sessions.values()) {
-            sessionSet.remove(session);
-        }
-    }
-
     public Set<Sesh> getSessions(int gameID) {
         return sessions.get(gameID);
     }
