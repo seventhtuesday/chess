@@ -52,18 +52,22 @@ public class WebSocketHandler {
         if (Objects.equals(user, game.whiteUsername())) {
             game = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
             gameService.updateGame(game);
-            var message = new NotifyMessage(user + "has left the game");
-            broadcast(game.gameID(), message,null);
         }
         else if (Objects.equals(user, game.blackUsername())) {
             game = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
             gameService.updateGame(game);
-            var message = new NotifyMessage(user + "has left the game");
-            broadcast(game.gameID(), message,null);
         }
 
-        var sess = new Sesh(user, session);
+        Sesh sess = null;
+        var sessions = webSocketService.getSessions(game.gameID());
+        for (var sesh : sessions) {
+            if(sesh.session == session) {
+                sess = sesh;
+            }
+        }
         webSocketService.remove(game.gameID(), sess);
+        var message = new NotifyMessage(user + " has left the game");
+        broadcast(game.gameID(), message, session);
     }
 
     private void resign(ResignCommand resignCommand) throws Exception {
@@ -73,13 +77,13 @@ public class WebSocketHandler {
         if (!game.whiteUsername().equals(user) && !game.blackUsername().equals(user)) {
             throw new Exception("You are not allowed to resign this game as Observer");
         }
-        if (game.game().getTeamTurn() == null) {
+        if (game.game().getTeamTurn() == ChessGame.TeamColor.NONE) {
             throw new Exception("Game is Over");
         }
 
-        game.game().setTeamTurn(null);
+        game.game().setTeamTurn(ChessGame.TeamColor.NONE);
         gameService.updateGame(game);
-        var message = new NotifyMessage(user + "has resigned");
+        var message = new NotifyMessage(user + " has resigned");
         broadcast(game.gameID(), message, null);
     }
 
@@ -101,23 +105,19 @@ public class WebSocketHandler {
         var team = connectCommand.getTeamColor();
         ServerMessage message = null;
         if(team == null) {
-            message = new NotifyMessage("joined as Observer");
-            sendMessage(message, session);
+            message = new NotifyMessage(user + " has joined as an Observer");
+            broadcast(id, message, session);
         }
         else if (team == ChessGame.TeamColor.WHITE) {
-            message = new NotifyMessage("joined as WHITE");
-            sendMessage(message, session);
             message = new NotifyMessage(user + " has joined as " + team.toString());
             broadcast(id, message, session);
         }
         else if (team == ChessGame.TeamColor.BLACK) {
-            message = new NotifyMessage("joined as BLACK");
-            sendMessage(message, session);
             message = new NotifyMessage(user + " has joined as " + team.toString());
             broadcast(id, message, session);
         }
         message = new LoadMessage(gameData);
-        broadcast(id, message, null);
+        sendMessage(message, session);
     }
 
     private void move(MoveCommand moveCommand, Session session) throws Exception {
@@ -128,7 +128,7 @@ public class WebSocketHandler {
         String turn = switch(team) {
             case WHITE -> game.whiteUsername();
             case BLACK -> game.blackUsername();
-            case null -> throw new Exception("game is over");
+            case NONE -> throw new Exception("the game is over");
         };
 
         if(!Objects.equals(user, turn)) {
