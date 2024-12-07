@@ -140,6 +140,18 @@ public class WebSocketHandler {
         broadcast(game.gameID(), new LoadMessage(game), null);
         var message = new NotifyMessage(user + " has moved " + moveCommand.getMove().toString());
         broadcast(game.gameID(), message, session);
+
+        if(game.game().isInCheckmate(game.game().getTeamTurn())) {
+            broadcast(game.gameID(), new NotifyMessage("checkmate"), null);
+            game.game().setTeamTurn(ChessGame.TeamColor.NONE);
+        }
+        else if(game.game().isInCheck(game.game().getTeamTurn())) {
+            broadcast(game.gameID(), new NotifyMessage("check"), null);
+        }
+        else if (game.game().isInStalemate(game.game().getTeamTurn())) {
+            broadcast(game.gameID(), new NotifyMessage("stalemate"), null);
+            game.game().setTeamTurn(ChessGame.TeamColor.NONE);
+        }
     }
 
     private void sendMessage(ServerMessage message, Session session) throws Exception {
