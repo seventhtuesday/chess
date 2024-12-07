@@ -80,7 +80,7 @@ public class Client {
         ChessPosition endPos = interpretMove(end.toUpperCase());
 
         ChessPiece.PieceType promotion = null;
-        if (params[2] != null) {
+        if (params.length == 3) {
             promotion = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
         }
         ChessMove move = new ChessMove(startPos, endPos, promotion);
@@ -89,6 +89,7 @@ public class Client {
     }
 
     private ChessPosition interpretMove(String location) throws Exception {
+        location = location.toUpperCase();
         if (location.length() != 2) {
             throw new Exception("Invalid position" + location);
         }
@@ -188,7 +189,7 @@ public class Client {
             games = sv.list();
             game = new GameData(gameID, null, null, name, new ChessGame());
             gameObj.put(gameID, game);
-            return "Created game " + gameID + ": " + name;
+            return "Created game: " + name;
         } catch (Exception e) {
             return "unable to create game";
         }
@@ -232,8 +233,6 @@ public class Client {
             uState = UserState.IN_GAME;
             team = tempteam;
 
-            PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
-            PrintBoard.run(game.game(), ChessGame.TeamColor.WHITE);
             return "";
 
         } catch (Exception e) {
@@ -277,8 +276,6 @@ public class Client {
             ws.connect(auth.authToken(), id, null);
             uState = UserState.IN_GAME;
 
-            PrintBoard.run(game.game(), ChessGame.TeamColor.BLACK);
-            PrintBoard.run(game.game(), ChessGame.TeamColor.WHITE);
             return "";
 
         } catch (Exception e) {
@@ -330,4 +327,9 @@ public class Client {
     public UserState getUserState() {
         return uState;
     }
+
+    public void updateGame(GameData g) {
+        game = g;
+    }
+
 }

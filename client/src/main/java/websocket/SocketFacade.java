@@ -34,7 +34,7 @@ public class SocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String s) {
                     JsonObject json = JsonParser.parseString(s).getAsJsonObject();
-                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(json.get("type").getAsString());
+                    ServerMessage.ServerMessageType type = ServerMessage.ServerMessageType.valueOf(json.get("serverMessageType").getAsString());
                     switch (type) {
                         case NOTIFICATION -> loopR.notify(new Gson().fromJson(s, NotifyMessage.class));
                         case LOAD_GAME -> loopR.load(new Gson().fromJson(s, LoadMessage.class));

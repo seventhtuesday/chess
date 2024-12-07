@@ -1,6 +1,5 @@
 package ui;
 
-import chess.ChessGame;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadMessage;
 import websocket.messages.NotifyMessage;
@@ -46,6 +45,7 @@ public class LoopR {
 
     public void load(LoadMessage message) {
         var game = message.getGameData();
+        cli.updateGame(game);
         var team = message.getTeamColor();
         PrintBoard.run(game.game(), team);
         prompt();

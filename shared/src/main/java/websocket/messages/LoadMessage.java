@@ -4,16 +4,16 @@ import chess.ChessGame;
 import model.GameData;
 
 public class LoadMessage extends ServerMessage {
-    private final GameData gameData;
+    private final GameData game;
     private ChessGame.TeamColor teamColor;
 
     public LoadMessage(GameData game) {
         super(ServerMessageType.LOAD_GAME);
-        this.gameData = game;
+        this.game = game;
     }
 
     public GameData getGameData() {
-        return gameData;
+        return game;
     }
 
     public ChessGame.TeamColor getTeamColor() {

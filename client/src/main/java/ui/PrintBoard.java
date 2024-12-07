@@ -18,7 +18,7 @@ public class PrintBoard {
             blackBoard(ps, game);
             blackHead(ps);
         }
-        else if(team == ChessGame.TeamColor.WHITE) {
+        else {
             whiteHead(ps);
             whiteBoard(ps, game);
             whiteHead(ps);
