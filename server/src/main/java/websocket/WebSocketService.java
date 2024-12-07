@@ -1,5 +1,6 @@
 package websocket;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -7,6 +8,9 @@ public class WebSocketService {
     public ConcurrentHashMap<Integer, Set<Sesh>> sessions = new ConcurrentHashMap<>();
 
     public void add(int gameID, Sesh session) {
+        if (!sessions.containsKey(gameID)) {
+            sessions.put(gameID, new HashSet<>());
+        }
         sessions.get(gameID).add(session);
     }
 

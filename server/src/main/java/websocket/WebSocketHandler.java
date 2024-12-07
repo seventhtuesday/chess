@@ -4,6 +4,7 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import service.GameService;
@@ -14,33 +15,29 @@ import websocket.messages.LoadMessage;
 import websocket.messages.NotifyMessage;
 import websocket.messages.ServerMessage;
 
+import java.util.Objects;
+
 @WebSocket
 public class WebSocketHandler {
-    private WebSocketService webSocketService = new WebSocketService();
-    private GameService gameService;
-    private LoginService loginService;
+    private final WebSocketService webSocketService = new WebSocketService();
+    private final GameService gameService;
+    private final LoginService loginService;
 
-    public WebSocketHandler(GameService gameService) {
+    public WebSocketHandler(GameService gameService, LoginService loginService) {
         this.gameService = gameService;
+        this.loginService = loginService;
     }
-
-    @OnWebSocketConnect
-    public void onConnect(Session session) {}
-    @OnWebSocketClose
-    public void onClose(Session session) {}
-    @OnWebSocketError
-    public void onError(Throwable error) {}
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
         try {
             JsonObject json = JsonParser.parseString(message).getAsJsonObject();
-            UserGameCommand.CommandType commandType = UserGameCommand.CommandType.valueOf(json.get("type").getAsString());
+            UserGameCommand.CommandType commandType = UserGameCommand.CommandType.valueOf(json.get("commandType").getAsString());
             switch (commandType) {
-                case LEAVE -> leave(new Gson().fromJson(message, LeaveCommand.class));
+                case LEAVE -> leave(new Gson().fromJson(message, LeaveCommand.class), session);
                 case RESIGN -> resign(new Gson().fromJson(message, ResignCommand.class));
                 case CONNECT -> connect(new Gson().fromJson(message, ConnectCommand.class), session);
-                case MAKE_MOVE -> move(new Gson().fromJson(message, MoveCommand.class));
+                case MAKE_MOVE -> move(new Gson().fromJson(message, MoveCommand.class), session);
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
@@ -49,12 +46,41 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(LeaveCommand leaveCommand) {
+    private void leave(LeaveCommand leaveCommand, Session session) throws Exception {
+        String user = loginService.getUsername(leaveCommand.getAuthToken());
+        var game = gameService.getGame(leaveCommand.getGameID());
+        if (Objects.equals(user, game.whiteUsername())) {
+            game = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+            gameService.updateGame(game);
+            var message = new NotifyMessage(user + "has left the game");
+            broadcast(game.gameID(), message,null);
+        }
+        else if (Objects.equals(user, game.blackUsername())) {
+            game = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+            gameService.updateGame(game);
+            var message = new NotifyMessage(user + "has left the game");
+            broadcast(game.gameID(), message,null);
+        }
 
+        var sess = new Sesh(user, session);
+        webSocketService.remove(game.gameID(), sess);
     }
 
-    private void resign(ResignCommand resignCommand) {
+    private void resign(ResignCommand resignCommand) throws Exception {
+        String user = loginService.getUsername(resignCommand.getAuthToken());
+        var game = gameService.getGame(resignCommand.getGameID());
 
+        if (!game.whiteUsername().equals(user) && !game.blackUsername().equals(user)) {
+            throw new Exception("You are not allowed to resign this game as Observer");
+        }
+        if (game.game().getTeamTurn() == null) {
+            throw new Exception("Game is Over");
+        }
+
+        game.game().setTeamTurn(null);
+        gameService.updateGame(game);
+        var message = new NotifyMessage(user + "has resigned");
+        broadcast(game.gameID(), message, null);
     }
 
     private void connect(ConnectCommand connectCommand, Session session) throws Exception {
@@ -94,18 +120,48 @@ public class WebSocketHandler {
         broadcast(id, message, null);
     }
 
-    private void move(MoveCommand moveCommand) {
+    private void move(MoveCommand moveCommand, Session session) throws Exception {
+        String user = loginService.getUsername(moveCommand.getAuthToken());
+        var game = gameService.getGame(moveCommand.getGameID());
+        ChessGame.TeamColor team = game.game().getTeamTurn();
 
+        String turn = switch(team) {
+            case WHITE -> game.whiteUsername();
+            case BLACK -> game.blackUsername();
+            case null -> throw new Exception("game is over");
+        };
+
+        if(!Objects.equals(user, turn)) {
+            throw new Exception("not your turn");
+        }
+        game.game().makeMove(moveCommand.getMove());
+        gameService.updateGame(game);
+
+        broadcast(game.gameID(), new LoadMessage(game), null);
+        var message = new NotifyMessage(user + " has moved " + moveCommand.getMove().toString());
+        broadcast(game.gameID(), message, session);
     }
 
-    private void sendMessage(ServerMessage message, Session session) {
-        message.
+    private void sendMessage(ServerMessage message, Session session) throws Exception {
         if(session.isOpen()) {
-
+            session.getRemote().sendString(new Gson().toJson(message));
         }
     }
 
-    private void broadcast(int gameID, ServerMessage message, Session exempt) {
-
+    private void broadcast(int gameID, ServerMessage message, Session exempt) throws Exception {
+        var sessions = webSocketService.getSessions(gameID);
+        for (var session : sessions) {
+            if(session.session != exempt && session.session.isOpen()) {
+                if(message.getClass() == LoadMessage.class) {
+                    if (Objects.equals(session.name, gameService.getGame(gameID).blackUsername())) {
+                        ((LoadMessage) message).setTeamColor(ChessGame.TeamColor.BLACK);
+                    }
+                    else {
+                        ((LoadMessage) message).setTeamColor(ChessGame.TeamColor.WHITE);
+                    }
+                }
+                sendMessage(message, session.session);
+            }
+        }
     }
 }

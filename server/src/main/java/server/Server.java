@@ -5,19 +5,21 @@ import dataaccess.*;
 import model.*;
 import service.*;
 import spark.*;
+import websocket.WebSocketHandler;
 
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
 public class Server {
-    private RegService regS;
-    private LoginService loginS;
-    private LogoutService logoutS;
-    private GameService gameS;
-    private JoinService joinS;
-    private ListService listS;
-    private ClearService clearS;
+    private final RegService regS;
+    private final LoginService loginS;
+    private final LogoutService logoutS;
+    private final GameService gameS;
+    private final JoinService joinS;
+    private final ListService listS;
+    private final ClearService clearS;
+    private final WebSocketHandler webSocketHandler;
 
     public Server() {
         UserDAO userDAO;
@@ -38,12 +40,15 @@ public class Server {
         joinS = new JoinService(authDAO, gameDAO);
         listS = new ListService(authDAO, gameDAO);
         clearS = new ClearService(userDAO, authDAO, gameDAO);
+        webSocketHandler = new WebSocketHandler(gameS, loginS);
     }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::regHand);
@@ -53,6 +58,7 @@ public class Server {
         Spark.put("/game", this::joinHand);
         Spark.get("/game", this::listHand);
         Spark.delete("/db", this::clearHand);
+
 
         Spark.exception(DataAccessException.class, this::dataExceptHand);
         Spark.exception(Exception.class, this::exceptHand);

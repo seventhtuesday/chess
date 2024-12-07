@@ -45,4 +45,8 @@ public class GameService {
     public GameData getGame(int gameID) throws Exception {
         return gameDAO.getGame(gameID);
     }
+
+    public void updateGame(GameData gameData) throws Exception {
+        gameDAO.updateGame(gameData);
+    }
 }
